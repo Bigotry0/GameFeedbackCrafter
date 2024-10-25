@@ -1,0 +1,23 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "GameFeedbackCrafter",
+	"Description": "Modular Game Feedback Creator",
+	"Category": "Other",
+	"CreatedBy": "Lim Young",
+	"CreatedByURL": "https://github.com/Bigotry0",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GameFeedbackCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
