@@ -2,26 +2,26 @@
 
 public class GameFeedbackCore : ModuleRules
 {
-    public GameFeedbackCore(ReadOnlyTargetRules Target) : base(Target)
-    {
-        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+	public GameFeedbackCore(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "Core",
-            }
-        );
+		PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core",
+				"StructUtils"
+			}
+		);
 
-        PrivateDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "CoreUObject",
-                "Engine",
-                "Slate",
-                "SlateCore",
-                "StructUtils"
-            }
-        );
-    }
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"CoreUObject",
+				"Engine",
+				"Slate",
+				"SlateCore"
+			}
+		);
+	}
 }

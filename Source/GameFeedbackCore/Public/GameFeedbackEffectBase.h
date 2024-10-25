@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFeedbackEffectBase.generated.h"
 
 UENUM(BlueprintType)
 enum class EGameFeedbackEffectState : uint8
@@ -16,8 +17,12 @@ enum class EGameFeedbackEffectState : uint8
 USTRUCT(BlueprintType)
 struct FGameFeedbackEffectBase
 {
-protected:
-	~FGameFeedbackEffectBase() = default;
+	GENERATED_BODY()
+
+	virtual ~FGameFeedbackEffectBase() = default;
+
+private:
+	float ElapsedTime = 0.0f;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -26,6 +31,19 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	EGameFeedbackEffectState State = EGameFeedbackEffectState::NotInitialized;
 
+	void Init();
+
+	void Play();
+
+	void Pause();
+
+	void Resume();
+
+	void Stop();
+
+	bool Tick(float DeltaTime);
+
+protected:
 	// Life cycle
 	virtual void OnInit()
 	{
@@ -44,6 +62,10 @@ public:
 	}
 
 	virtual void OnStop(bool bInterrupted)
+	{
+	}
+
+	virtual void OnTick(float DeltaTime)
 	{
 	}
 };

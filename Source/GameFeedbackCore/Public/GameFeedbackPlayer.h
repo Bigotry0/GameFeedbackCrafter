@@ -11,26 +11,47 @@
  * 
  */
 UCLASS()
-class GAMEFEEDBACKCORE_API UGameFeedbackPlayer : public UObject
+class GAMEFEEDBACKCORE_API UGameFeedbackPlayer : public UObject, public FTickableGameObject
 {
 	GENERATED_BODY()
 
+private:
+	bool bIsRunning = false;
+
+	bool bAutoDestroy = true;
+
+	UPROPERTY()
+	UGameFeedback* CurrentFeedback = nullptr;
+
+	UFUNCTION()
+	void OnGameFeedbackStateChanged(EGameFeedbackState NewState);
+
+	UFUNCTION()
+	void OnGameFeedbackStopped(bool bInterrupted);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void InitFeedback(UGameFeedback* Feedback);
+	void LoadFeedback(UGameFeedback* Feedback);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void PlayFeedback(UGameFeedback* Feedback);
+	void PlayFeedback(bool bUseAutoDestroy = false);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void PauseFeedback(UGameFeedback* Feedback);
+	void PauseFeedback() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void ResumeFeedback(UGameFeedback* Feedback);
+	void ResumeFeedback() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void StopFeedback(UGameFeedback* Feedback);
+	void StopFeedback() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void ReplayFeedback(UGameFeedback* Feedback);
+	void ReplayFeedback() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
+	void UnloadFeedback();
+
+protected:
+	virtual TStatId GetStatId() const override;
+	virtual void Tick(float DeltaTime) override;
 };

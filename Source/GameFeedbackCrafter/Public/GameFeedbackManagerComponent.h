@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFeedbackManagerInterface.h"
+#include "GameFeedback.h"
+#include "GameFeedbackPlayer.h"
 #include "Components/ActorComponent.h"
 #include "GameFeedbackManagerComponent.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class GAMEFEEDBACKCRAFTER_API UGameFeedbackManagerComponent : public UActorComponent, IGameFeedbackManagerInterface
+class GAMEFEEDBACKCRAFTER_API UGameFeedbackManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -22,7 +23,31 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameFeedbackManager")
+	TMap<FName, UGameFeedback*> Feedbacks;
+
+private:
+	UPROPERTY()
+	TMap<FName, UGameFeedbackPlayer*> FeedbackPlayers;
+
+private:
+	bool ValidateFeedback(FName FeedbackName) const;
+
+	UGameFeedbackPlayer* GetFeedbackPlayerFromFeedbacksMap(FName FeedbackName);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
+	void PlayFeedback(FName FeedbackName);
+
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
+	void PauseFeedback(FName FeedbackName);
+
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
+	void ResumeFeedback(FName FeedbackName);
+
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
+	void StopFeedback(FName FeedbackName);
+
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
+	void ReplayFeedback(FName FeedbackName);
 };
