@@ -28,7 +28,7 @@ class GAMEFEEDBACKCORE_API UGameFeedback : public UObject
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "GameFeedback",
-		meta = (BaseStruct = "/Script/GameFeedbackCore.FGameFeedbackEffectBase", ExcludeBaseStruct))
+		meta = (BaseStruct = "/Script/GameFeedbackCore.GameFeedbackEffectBase", ExcludeBaseStruct))
 	TArray<FInstancedStruct> GameFeedbackEffects;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameFeedback")
