@@ -1,4 +1,6 @@
-﻿#include "GameFeedbackCore.h"
+﻿// Copyright (c) Lim Young
+
+#include "GameFeedbackCore.h"
 
 #define LOCTEXT_NAMESPACE "FGameFeedbackCoreModule"
 

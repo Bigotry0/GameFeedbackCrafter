@@ -1,8 +1,8 @@
 ﻿using UnrealBuildTool;
 
-public class GameFeedbackCore : ModuleRules
+public class GameFeedbackCrafter : ModuleRules
 {
-    public GameFeedbackCore(ReadOnlyTargetRules Target) : base(Target)
+    public GameFeedbackCrafter(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -19,8 +19,7 @@ public class GameFeedbackCore : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore",
-                "StructUtils"
+                "SlateCore"
             }
         );
     }

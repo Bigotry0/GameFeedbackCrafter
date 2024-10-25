@@ -18,6 +18,21 @@
 			"Name": "GameFeedbackCore",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "GameFeedbackEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "GameFeedbackCrafter",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "GameFeedbackEffect",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	]
 }
