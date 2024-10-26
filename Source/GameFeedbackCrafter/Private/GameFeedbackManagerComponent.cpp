@@ -21,12 +21,6 @@ UGameFeedbackManagerComponent::UGameFeedbackManagerComponent()
 void UGameFeedbackManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Initialize Feedbacks
-	for (auto& Feedback : Feedbacks)
-	{
-		Feedback.Value->InitFeedback();
-	}
 }
 
 bool UGameFeedbackManagerComponent::ValidateFeedback(FName FeedbackName) const

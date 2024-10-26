@@ -19,12 +19,12 @@ bool UGameFeedback::ValidateGameFeedbackEffects() const
 	return true;
 }
 
-bool UGameFeedback::ValidateGameFeedbackEffect(const FInstancedStruct& InstancedStruct)
+bool UGameFeedback::ValidateGameFeedbackEffect(const UGameFeedbackEffectBase* GameFeedbackEffect)
 {
-	if (!InstancedStruct.IsValid())
+	if (!GameFeedbackEffect)
 	{
 #if WITH_EDITOR
-		UE_LOG(GameFeedbackCoreLog, Warning, TEXT("InstancedStruct is invalid."));
+		UE_LOG(GameFeedbackCoreLog, Warning, TEXT("GameFeedbackEffect is nullptr."));
 #endif
 		return false;
 	}
@@ -50,12 +50,12 @@ void UGameFeedback::InitFeedback()
 
 	ElapsedTime = 0.0f;
 
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Init();
+		GFE->Init();
 	}
 
 	SetState(EGameFeedbackState::Idle);
@@ -68,12 +68,12 @@ void UGameFeedback::PlayFeedback()
 		return;
 	}
 
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Play();
+		GFE->Play();
 	}
 
 	SetState(EGameFeedbackState::Running);
@@ -86,12 +86,12 @@ void UGameFeedback::PauseFeedback()
 		return;
 	}
 
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Pause();
+		GFE->Pause();
 	}
 
 	SetState(EGameFeedbackState::Paused);
@@ -104,12 +104,12 @@ void UGameFeedback::ResumeFeedback()
 		return;
 	}
 
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Resume();
+		GFE->Resume();
 	}
 
 	SetState(EGameFeedbackState::Running);
@@ -122,12 +122,12 @@ void UGameFeedback::StopFeedback()
 		return;
 	}
 
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Stop();
+		GFE->Stop();
 	}
 
 	if (State == EGameFeedbackState::Running || State == EGameFeedbackState::Paused)
@@ -154,12 +154,12 @@ void UGameFeedback::TickFeedback(float DeltaTime)
 	ElapsedTime += DeltaTime;
 
 	bool bAllIdle = true;
-	for (auto InstancedStruct : GameFeedbackEffects)
+	for (const auto GFE : GameFeedbackEffects)
 	{
-		if (!ValidateGameFeedbackEffect(InstancedStruct))
+		if (!ValidateGameFeedbackEffect(GFE))
 			continue;
 
-		bAllIdle &= !InstancedStruct.GetMutable<FGameFeedbackEffectBase>().Tick(DeltaTime);
+		bAllIdle &= !GFE->Tick(DeltaTime);
 	}
 
 	if (bAllIdle)

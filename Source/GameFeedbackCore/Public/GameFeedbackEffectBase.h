@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Object.h"
 #include "GameFeedbackEffectBase.generated.h"
 
 UENUM(BlueprintType)
@@ -14,21 +15,20 @@ enum class EGameFeedbackEffectState : uint8
 	Paused,
 };
 
-USTRUCT(BlueprintType)
-struct FGameFeedbackEffectBase
+UCLASS(Abstract, EditInlineNew, AutoExpandCategories=(Basic))
+class GAMEFEEDBACKCORE_API UGameFeedbackEffectBase : public UObject
 {
 	GENERATED_BODY()
 
-	virtual ~FGameFeedbackEffectBase() = default;
-
-private:
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Basic")
 	float ElapsedTime = 0.0f;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Basic")
 	float Duration = 0.2f;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Basic")
 	EGameFeedbackEffectState State = EGameFeedbackEffectState::NotInitialized;
 
 	void Init();

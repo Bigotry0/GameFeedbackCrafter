@@ -19,7 +19,8 @@ public class GameFeedbackEffect : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "GameFeedbackCore"
             }
         );
     }

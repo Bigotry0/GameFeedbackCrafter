@@ -9,8 +9,7 @@ public class GameFeedbackCore : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"StructUtils"
+				"Core"
 			}
 		);
 

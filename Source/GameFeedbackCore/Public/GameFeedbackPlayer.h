@@ -18,7 +18,7 @@ class GAMEFEEDBACKCORE_API UGameFeedbackPlayer : public UObject, public FTickabl
 private:
 	bool bIsRunning = false;
 
-	bool bAutoDestroy = true;
+	bool bAutoDestroy = false;
 
 	UPROPERTY()
 	UGameFeedback* CurrentFeedback = nullptr;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InstancedStruct.h"
+#include "GameFeedbackEffectBase.h"
 #include "UObject/Object.h"
 #include "GameFeedback.generated.h"
 
@@ -27,9 +27,8 @@ class GAMEFEEDBACKCORE_API UGameFeedback : public UObject
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "GameFeedback",
-		meta = (BaseStruct = "/Script/GameFeedbackCore.GameFeedbackEffectBase", ExcludeBaseStruct))
-	TArray<FInstancedStruct> GameFeedbackEffects;
+	UPROPERTY(EditAnywhere, Instanced, Category = "GameFeedback")
+	TArray<UGameFeedbackEffectBase*> GameFeedbackEffects;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameFeedback")
 	EGameFeedbackState State = EGameFeedbackState::NotInitialized;
@@ -52,10 +51,10 @@ private:
 
 	/**
 	 * Validate GameFeedbackEffect
-	 * @param InstancedStruct InstancedStruct 
+	 * @param GameFeedbackEffect GameFeedbackEffectPtr
 	 * @return true if valid
 	 */
-	static bool ValidateGameFeedbackEffect(const FInstancedStruct& InstancedStruct);
+	static bool ValidateGameFeedbackEffect(const UGameFeedbackEffectBase* GameFeedbackEffect);
 
 	void SetState(EGameFeedbackState NewState);
 

@@ -2,7 +2,7 @@
 
 #include "GameFeedbackEffectBase.h"
 
-void FGameFeedbackEffectBase::Init()
+void UGameFeedbackEffectBase::Init()
 {
 	ElapsedTime = 0.0f;
 
@@ -11,28 +11,28 @@ void FGameFeedbackEffectBase::Init()
 	State = EGameFeedbackEffectState::Idle;
 }
 
-void FGameFeedbackEffectBase::Play()
+void UGameFeedbackEffectBase::Play()
 {
 	OnPlay();
 
 	State = EGameFeedbackEffectState::Running;
 }
 
-void FGameFeedbackEffectBase::Pause()
+void UGameFeedbackEffectBase::Pause()
 {
-	OnPlay();
+	OnPause();
 
 	State = EGameFeedbackEffectState::Paused;
 }
 
-void FGameFeedbackEffectBase::Resume()
+void UGameFeedbackEffectBase::Resume()
 {
 	OnResume();
 
 	State = EGameFeedbackEffectState::Running;
 }
 
-void FGameFeedbackEffectBase::Stop()
+void UGameFeedbackEffectBase::Stop()
 {
 	if (State == EGameFeedbackEffectState::Running || State == EGameFeedbackEffectState::Paused)
 	{
@@ -44,7 +44,7 @@ void FGameFeedbackEffectBase::Stop()
 	State = EGameFeedbackEffectState::Idle;
 }
 
-bool FGameFeedbackEffectBase::Tick(float DeltaTime)
+bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 {
 	if (State == EGameFeedbackEffectState::Running)
 	{
