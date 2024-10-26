@@ -4,61 +4,61 @@
 
 void UGameFeedbackEffectBase::Init()
 {
-	ElapsedTime = 0.0f;
+	BasicConfig.ElapsedTime = 0.0f;
 
 	OnInit();
 
-	State = EGameFeedbackEffectState::Idle;
+	BasicConfig.State = EGameFeedbackEffectState::Idle;
 }
 
 void UGameFeedbackEffectBase::Play()
 {
 	OnPlay();
 
-	State = EGameFeedbackEffectState::Running;
+	BasicConfig.State = EGameFeedbackEffectState::Running;
 }
 
 void UGameFeedbackEffectBase::Pause()
 {
 	OnPause();
 
-	State = EGameFeedbackEffectState::Paused;
+	BasicConfig.State = EGameFeedbackEffectState::Paused;
 }
 
 void UGameFeedbackEffectBase::Resume()
 {
 	OnResume();
 
-	State = EGameFeedbackEffectState::Running;
+	BasicConfig.State = EGameFeedbackEffectState::Running;
 }
 
 void UGameFeedbackEffectBase::Stop()
 {
-	if (State == EGameFeedbackEffectState::Running || State == EGameFeedbackEffectState::Paused)
+	if (BasicConfig.State == EGameFeedbackEffectState::Running || BasicConfig.State == EGameFeedbackEffectState::Paused)
 	{
 		OnStop(true);
 	}
 
-	ElapsedTime = 0.0f;
+	BasicConfig.ElapsedTime = 0.0f;
 
-	State = EGameFeedbackEffectState::Idle;
+	BasicConfig.State = EGameFeedbackEffectState::Idle;
 }
 
 bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 {
-	if (State == EGameFeedbackEffectState::Running)
+	if (BasicConfig.State == EGameFeedbackEffectState::Running)
 	{
 		OnTick(DeltaTime);
 
-		ElapsedTime += DeltaTime;
+		BasicConfig.ElapsedTime += DeltaTime;
 
-		if (ElapsedTime >= Duration)
+		if (BasicConfig.ElapsedTime >= BasicConfig.Duration)
 		{
 			OnStop(false);
 
-			ElapsedTime = 0.0f;
+			BasicConfig.ElapsedTime = 0.0f;
 
-			State = EGameFeedbackEffectState::Idle;
+			BasicConfig.State = EGameFeedbackEffectState::Idle;
 		}
 
 		return true;

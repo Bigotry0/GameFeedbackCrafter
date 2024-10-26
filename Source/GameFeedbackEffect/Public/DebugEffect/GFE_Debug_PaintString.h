@@ -55,4 +55,7 @@ protected:
 	virtual void OnResume() override;
 	virtual void OnStop(bool bInterrupted) override;
 	virtual void OnTick(float DeltaTime) override;
+
+protected:
+	virtual EGameFeedbackEffectType GetEffectType() const override;
 };

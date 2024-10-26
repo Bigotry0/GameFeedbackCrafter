@@ -21,7 +21,7 @@ enum class EGameFeedbackState : uint8
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class GAMEFEEDBACKCORE_API UGameFeedback : public UObject
 {
 	GENERATED_BODY()

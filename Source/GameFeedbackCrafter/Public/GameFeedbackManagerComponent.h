@@ -23,7 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameFeedbackManager")
+	UPROPERTY(EditAnywhere, Instanced, Category = "GameFeedbackManager")
 	TMap<FName, UGameFeedback*> Feedbacks;
 
 private:
