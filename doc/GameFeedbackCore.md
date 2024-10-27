@@ -1,4 +1,4 @@
->Language: [Chinese](doc/Language/Chinese/GameFeedbackCore-zh)
+>Language: [Chinese](Language/Chinese/GameFeedbackCore-zh.md)
  
 The core part of the GameFeedback framework consists of two main parts, the core library and the general tools library.
 

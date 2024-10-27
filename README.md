@@ -1,5 +1,5 @@
 # GameFeedbackCrafter
-> Language: [Chinese](README-zh)
+> Language: [Chinese](README-zh.md)
 
 GameFeedbackCrafter is a modular effect creation plugin that enables you to quickly iterate and work with complex game performance.
 

@@ -1,22 +1,22 @@
 # Game Feedback Effect Index
-Effect将不断更新，以下为具体分类的目录。该目录将随着Effect的更新二更新。
+The Effect library will be updated continuously, and the following is a catalog of specific categories. This catalog will be updated as the Effect library is updated.
 
- 以下是Effect的具体分类目录。
+ The following is a catalog of specific categories for Effect.
 
-- [Audio](doc/Effect/Audio)
-- [VFX](doc/Effect/VFX)
-- [Transform](doc/Effect/Transform)
-- [Camera](doc/Effect/Camera)
-- [PostProcess](doc/Effect/PostProcess)
-- [Logic](doc/Effect/Logic)
-- [Time](doc/Effect/Time)
-- [Haptic](doc/Effect/Haptic)
-- [UMG](doc/Effect/UMG)
-- [Light](doc/Effect/Light)
-- [Actor](doc/Effect/Actor)
-- [Material](doc/Effect/Material)
-- [Animation](doc/Effect/Animation)
-- [Event](doc/Effect/Event)
-- [Debug](doc/Effect/Debug)
+- [Audio](Effect/Audio.md)
+- [VFX](Effect/VFX.md)
+- [Transform](Effect/Transform.md)
+- [Camera](Effect/Camera.md)
+- [PostProcess](Effect/PostProcess.md)
+- [Logic](Effect/Logic.md)
+- [Time](Effect/Time.md)
+- [Haptic](Effect/Haptic.md)
+- [UMG](Effect/UMG.md)
+- [Light](Effect/Light.md)
+- [Actor](Effect/Actor.md)
+- [Material](Effect/Material.md)
+- [Animation](Effect/Animation.md)
+- [Event](Effect/Event.md)
+- [Debug](Effect/Debug.md)
 - ...
-- [Custom](doc/Effect/Custom)
+- [Custom](Effect/Custom.md)
