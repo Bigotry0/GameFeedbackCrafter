@@ -16,7 +16,7 @@ void UGameFeedbackPlayer::OnGameFeedbackStateChanged(EGameFeedbackState NewState
 
 void UGameFeedbackPlayer::OnGameFeedbackStopped(bool bInterrupted)
 {
-	if (bAutoDestroy)
+	if (bAutoUnload)
 	{
 		UnloadFeedback();
 	}
@@ -31,9 +31,9 @@ void UGameFeedbackPlayer::LoadFeedback(UGameFeedback* Feedback)
 	CurrentFeedback->InitFeedback();
 }
 
-void UGameFeedbackPlayer::PlayFeedback(bool bUseAutoDestroy)
+void UGameFeedbackPlayer::PlayFeedback(bool bUseAutoUnload)
 {
-	bAutoDestroy = bUseAutoDestroy;
+	bAutoUnload = bUseAutoUnload;
 	CurrentFeedback->PlayFeedback();
 }
 

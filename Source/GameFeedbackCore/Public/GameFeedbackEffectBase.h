@@ -89,13 +89,16 @@ public:
 
 	UGameFeedbackEffectBase()
 	{
+#if WITH_EDITOR
 		EffectTypeColor = GetTypeColor(GetEffectTypeFromChildClass());
+#endif
 	}
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Basic", meta=(DisplayPriority = 1))
 	FGameFeedbackEffectBasicConfig BasicConfig;
 
+#if WITH_EDITOR
 	virtual EGameFeedbackEffectType GetEffectType() const
 	{
 		return EGameFeedbackEffectType::Custom;
@@ -105,6 +108,7 @@ protected:
 	{
 		return GetEffectType();
 	}
+#endif
 
 public:
 	void Init();

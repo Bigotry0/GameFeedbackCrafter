@@ -54,7 +54,7 @@
 #pragma once
 
 UENUM(BlueprintType)
-enum class EGFEase : uint8
+enum class EGFEaseType : uint8
 {
 	Linear,
 	Smoothstep,
@@ -93,16 +93,16 @@ enum class EGFEase : uint8
 	InOutBack,
 };
 
-class GAMEFEEDBACKCORE_API GFEasing
+class GAMEFEEDBACKCORE_API FGFEasing
 {
 public:
-	static float Ease(float t, EGFEase EaseType);
+	static float Ease(float t, EGFEaseType EaseType);
 	/**
 	 * Ease with overriding parameters
 	 * @param Param1 Elastic: Amplitude (1.0) / Back: Overshoot (1.70158) / Stepped: Steps (10) / Smoothstep: x0 (0)
 	 * @param Param2 Elastic: Period (0.2) / Smoothstep: x1 (1)
 	 */
-	static float EaseWithParams(float t, EGFEase EaseType, float Param1 = 0, float Param2 = 0);
+	static float EaseWithParams(float t, EGFEaseType EaseType, float Param1 = 0, float Param2 = 0);
 	static float EaseLinear(float t);
 	static float EaseSmoothstep(float t, float x0 = 0, float x1 = 1);
 	static float EaseStepped(float t, int Steps = 10);

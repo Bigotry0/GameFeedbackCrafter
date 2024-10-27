@@ -12,81 +12,81 @@ const float BOUNCE_K5 = 2.25f * BOUNCE_R;	  // 81.81%
 const float BOUNCE_K6 = 2.625f * BOUNCE_R;	  // 95.45%
 const float BOUNCE_K0 = 7.5625f;
 
-float GFEasing::Ease(float t, EGFEase EaseType)
+float FGFEasing::Ease(float t, EGFEaseType EaseType)
 {
 	switch (EaseType)
 	{
 		default:
-		case EGFEase::Linear:
+		case EGFEaseType::Linear:
 			return EaseLinear(t);
-		case EGFEase::Smoothstep:
+		case EGFEaseType::Smoothstep:
 			return EaseSmoothstep(t);
-		case EGFEase::Stepped:
+		case EGFEaseType::Stepped:
 			return EaseStepped(t);
-		case EGFEase::InSine:
+		case EGFEaseType::InSine:
 			return EaseInSine(t);
-		case EGFEase::OutSine:
+		case EGFEaseType::OutSine:
 			return EaseOutSine(t);
-		case EGFEase::InOutSine:
+		case EGFEaseType::InOutSine:
 			return EaseInOutSine(t);
-		case EGFEase::InQuad:
+		case EGFEaseType::InQuad:
 			return EaseInQuad(t);
-		case EGFEase::OutQuad:
+		case EGFEaseType::OutQuad:
 			return EaseOutQuad(t);
-		case EGFEase::InOutQuad:
+		case EGFEaseType::InOutQuad:
 			return EaseInOutQuad(t);
-		case EGFEase::InCubic:
+		case EGFEaseType::InCubic:
 			return EaseInCubic(t);
-		case EGFEase::OutCubic:
+		case EGFEaseType::OutCubic:
 			return EaseOutCubic(t);
-		case EGFEase::InOutCubic:
+		case EGFEaseType::InOutCubic:
 			return EaseInOutCubic(t);
-		case EGFEase::InQuart:
+		case EGFEaseType::InQuart:
 			return EaseInQuart(t);
-		case EGFEase::OutQuart:
+		case EGFEaseType::OutQuart:
 			return EaseOutQuart(t);
-		case EGFEase::InOutQuart:
+		case EGFEaseType::InOutQuart:
 			return EaseInOutQuart(t);
-		case EGFEase::InQuint:
+		case EGFEaseType::InQuint:
 			return EaseInQuint(t);
-		case EGFEase::OutQuint:
+		case EGFEaseType::OutQuint:
 			return EaseOutQuint(t);
-		case EGFEase::InOutQuint:
+		case EGFEaseType::InOutQuint:
 			return EaseInOutQuint(t);
-		case EGFEase::InExpo:
+		case EGFEaseType::InExpo:
 			return EaseInExpo(t);
-		case EGFEase::OutExpo:
+		case EGFEaseType::OutExpo:
 			return EaseOutExpo(t);
-		case EGFEase::InOutExpo:
+		case EGFEaseType::InOutExpo:
 			return EaseInOutExpo(t);
-		case EGFEase::InCirc:
+		case EGFEaseType::InCirc:
 			return EaseInCirc(t);
-		case EGFEase::OutCirc:
+		case EGFEaseType::OutCirc:
 			return EaseOutCirc(t);
-		case EGFEase::InOutCirc:
+		case EGFEaseType::InOutCirc:
 			return EaseInOutCirc(t);
-		case EGFEase::InElastic:
+		case EGFEaseType::InElastic:
 			return EaseInElastic(t);
-		case EGFEase::OutElastic:
+		case EGFEaseType::OutElastic:
 			return EaseOutElastic(t);
-		case EGFEase::InOutElastic:
+		case EGFEaseType::InOutElastic:
 			return EaseInOutElastic(t);
-		case EGFEase::InBounce:
+		case EGFEaseType::InBounce:
 			return EaseInBounce(t);
-		case EGFEase::OutBounce:
+		case EGFEaseType::OutBounce:
 			return EaseOutBounce(t);
-		case EGFEase::InOutBounce:
+		case EGFEaseType::InOutBounce:
 			return EaseInOutBounce(t);
-		case EGFEase::InBack:
+		case EGFEaseType::InBack:
 			return EaseInBack(t);
-		case EGFEase::OutBack:
+		case EGFEaseType::OutBack:
 			return EaseOutBack(t);
-		case EGFEase::InOutBack:
+		case EGFEaseType::InOutBack:
 			return EaseInOutBack(t);
 	}
 }
 
-float GFEasing::EaseWithParams(float t, EGFEase EaseType, float Param1, float Param2)
+float FGFEasing::EaseWithParams(float t, EGFEaseType EaseType, float Param1, float Param2)
 {
 	if (Param1 == 0 && Param2 == 0)
 	{
@@ -96,87 +96,87 @@ float GFEasing::EaseWithParams(float t, EGFEase EaseType, float Param1, float Pa
 	switch (EaseType)
 	{
 		default:
-		case EGFEase::Linear:
+		case EGFEaseType::Linear:
 			return EaseLinear(t);
-		case EGFEase::Smoothstep:
+		case EGFEaseType::Smoothstep:
 			return EaseSmoothstep(t, Param1, Param2);
-		case EGFEase::Stepped:
+		case EGFEaseType::Stepped:
 			return EaseStepped(t, Param1);
-		case EGFEase::InSine:
+		case EGFEaseType::InSine:
 			return EaseInSine(t);
-		case EGFEase::OutSine:
+		case EGFEaseType::OutSine:
 			return EaseOutSine(t);
-		case EGFEase::InOutSine:
+		case EGFEaseType::InOutSine:
 			return EaseInOutSine(t);
-		case EGFEase::InQuad:
+		case EGFEaseType::InQuad:
 			return EaseInQuad(t);
-		case EGFEase::OutQuad:
+		case EGFEaseType::OutQuad:
 			return EaseOutQuad(t);
-		case EGFEase::InOutQuad:
+		case EGFEaseType::InOutQuad:
 			return EaseInOutQuad(t);
-		case EGFEase::InCubic:
+		case EGFEaseType::InCubic:
 			return EaseInCubic(t);
-		case EGFEase::OutCubic:
+		case EGFEaseType::OutCubic:
 			return EaseOutCubic(t);
-		case EGFEase::InOutCubic:
+		case EGFEaseType::InOutCubic:
 			return EaseInOutCubic(t);
-		case EGFEase::InQuart:
+		case EGFEaseType::InQuart:
 			return EaseInQuart(t);
-		case EGFEase::OutQuart:
+		case EGFEaseType::OutQuart:
 			return EaseOutQuart(t);
-		case EGFEase::InOutQuart:
+		case EGFEaseType::InOutQuart:
 			return EaseInOutQuart(t);
-		case EGFEase::InQuint:
+		case EGFEaseType::InQuint:
 			return EaseInQuint(t);
-		case EGFEase::OutQuint:
+		case EGFEaseType::OutQuint:
 			return EaseOutQuint(t);
-		case EGFEase::InOutQuint:
+		case EGFEaseType::InOutQuint:
 			return EaseInOutQuint(t);
-		case EGFEase::InExpo:
+		case EGFEaseType::InExpo:
 			return EaseInExpo(t);
-		case EGFEase::OutExpo:
+		case EGFEaseType::OutExpo:
 			return EaseOutExpo(t);
-		case EGFEase::InOutExpo:
+		case EGFEaseType::InOutExpo:
 			return EaseInOutExpo(t);
-		case EGFEase::InCirc:
+		case EGFEaseType::InCirc:
 			return EaseInCirc(t);
-		case EGFEase::OutCirc:
+		case EGFEaseType::OutCirc:
 			return EaseOutCirc(t);
-		case EGFEase::InOutCirc:
+		case EGFEaseType::InOutCirc:
 			return EaseInOutCirc(t);
-		case EGFEase::InElastic:
+		case EGFEaseType::InElastic:
 			return EaseInElastic(t, Param1, Param2);
-		case EGFEase::OutElastic:
+		case EGFEaseType::OutElastic:
 			return EaseOutElastic(t, Param1, Param2);
-		case EGFEase::InOutElastic:
+		case EGFEaseType::InOutElastic:
 			return EaseInOutElastic(t, Param1, Param2);
-		case EGFEase::InBounce:
+		case EGFEaseType::InBounce:
 			return EaseInBounce(t);
-		case EGFEase::OutBounce:
+		case EGFEaseType::OutBounce:
 			return EaseOutBounce(t);
-		case EGFEase::InOutBounce:
+		case EGFEaseType::InOutBounce:
 			return EaseInOutBounce(t);
-		case EGFEase::InBack:
+		case EGFEaseType::InBack:
 			return EaseInBack(t, Param1);
-		case EGFEase::OutBack:
+		case EGFEaseType::OutBack:
 			return EaseOutBack(t, Param1);
-		case EGFEase::InOutBack:
+		case EGFEaseType::InOutBack:
 			return EaseInOutBack(t, Param1);
 	}
 }
 
-float GFEasing::EaseLinear(float t)
+float FGFEasing::EaseLinear(float t)
 {
 	return t;
 }
 
-float GFEasing::EaseSmoothstep(float t, float x0, float x1)
+float FGFEasing::EaseSmoothstep(float t, float x0, float x1)
 {
 	float x = FMath::Clamp<float>((t - x0) / (x1 - x0), 0.0f, 1.0f);
 	return x * x * (3.0f - 2.0f * x);
 }
 
-float GFEasing::EaseStepped(float t, int Steps)
+float FGFEasing::EaseStepped(float t, int Steps)
 {
 	if (t <= 0)
 	{
@@ -192,32 +192,32 @@ float GFEasing::EaseStepped(float t, int Steps)
 	}
 }
 
-float GFEasing::EaseInSine(float t)
+float FGFEasing::EaseInSine(float t)
 {
 	return 1 - FMath::Cos(t * PI * .5f);
 }
 
-float GFEasing::EaseOutSine(float t)
+float FGFEasing::EaseOutSine(float t)
 {
 	return FMath::Sin(t * PI * .5f);
 }
 
-float GFEasing::EaseInOutSine(float t)
+float FGFEasing::EaseInOutSine(float t)
 {
 	return 0.5f * (1 - FMath::Cos(t * PI));
 }
 
-float GFEasing::EaseInQuad(float t)
+float FGFEasing::EaseInQuad(float t)
 {
 	return t * t;
 }
 
-float GFEasing::EaseOutQuad(float t)
+float FGFEasing::EaseOutQuad(float t)
 {
 	return t * (2 - t);
 }
 
-float GFEasing::EaseInOutQuad(float t)
+float FGFEasing::EaseInOutQuad(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -231,18 +231,18 @@ float GFEasing::EaseInOutQuad(float t)
 	}
 }
 
-float GFEasing::EaseInCubic(float t)
+float FGFEasing::EaseInCubic(float t)
 {
 	return t * t * t;
 }
 
-float GFEasing::EaseOutCubic(float t)
+float FGFEasing::EaseOutCubic(float t)
 {
 	float m = t - 1;
 	return 1 + m * m * m;
 }
 
-float GFEasing::EaseInOutCubic(float t)
+float FGFEasing::EaseInOutCubic(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -256,18 +256,18 @@ float GFEasing::EaseInOutCubic(float t)
 	}
 }
 
-float GFEasing::EaseInQuart(float t)
+float FGFEasing::EaseInQuart(float t)
 {
 	return t * t * t * t;
 }
 
-float GFEasing::EaseOutQuart(float t)
+float FGFEasing::EaseOutQuart(float t)
 {
 	float m = t - 1;
 	return 1 - m * m * m * m;
 }
 
-float GFEasing::EaseInOutQuart(float t)
+float FGFEasing::EaseInOutQuart(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -281,18 +281,18 @@ float GFEasing::EaseInOutQuart(float t)
 	}
 }
 
-float GFEasing::EaseInQuint(float t)
+float FGFEasing::EaseInQuint(float t)
 {
 	return t * t * t * t * t;
 }
 
-float GFEasing::EaseOutQuint(float t)
+float FGFEasing::EaseOutQuint(float t)
 {
 	float m = t - 1;
 	return 1 + m * m * m * m * m;
 }
 
-float GFEasing::EaseInOutQuint(float t)
+float FGFEasing::EaseInOutQuint(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -306,7 +306,7 @@ float GFEasing::EaseInOutQuint(float t)
 	}
 }
 
-float GFEasing::EaseInExpo(float t)
+float FGFEasing::EaseInExpo(float t)
 {
 	if (t <= 0)
 	{
@@ -319,7 +319,7 @@ float GFEasing::EaseInExpo(float t)
 	return FMath::Pow(2, 10 * (t - 1));
 }
 
-float GFEasing::EaseOutExpo(float t)
+float FGFEasing::EaseOutExpo(float t)
 {
 	if (t <= 0)
 	{
@@ -332,7 +332,7 @@ float GFEasing::EaseOutExpo(float t)
 	return 1 - FMath::Pow(2, -10 * t);
 }
 
-float GFEasing::EaseInOutExpo(float t)
+float FGFEasing::EaseInOutExpo(float t)
 {
 	if (t <= 0)
 	{
@@ -352,18 +352,18 @@ float GFEasing::EaseInOutExpo(float t)
 	}
 }
 
-float GFEasing::EaseInCirc(float t)
+float FGFEasing::EaseInCirc(float t)
 {
 	return 1 - FMath::Sqrt(1 - t * t);
 }
 
-float GFEasing::EaseOutCirc(float t)
+float FGFEasing::EaseOutCirc(float t)
 {
 	float m = t - 1;
 	return FMath::Sqrt(1 - m * m);
 }
 
-float GFEasing::EaseInOutCirc(float t)
+float FGFEasing::EaseInOutCirc(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -377,7 +377,7 @@ float GFEasing::EaseInOutCirc(float t)
 	}
 }
 
-float GFEasing::EaseInElastic(float t, float Amplitude, float Period)
+float FGFEasing::EaseInElastic(float t, float Amplitude, float Period)
 {
 	if (t == 0)
 	{
@@ -406,7 +406,7 @@ float GFEasing::EaseInElastic(float t, float Amplitude, float Period)
 // 	return -FMath::Pow(2, 10 * m) * FMath::Sin((m * 40 - 3) * PI / 6);
 // }
 
-float GFEasing::EaseOutElastic(float t, float Amplitude, float Period)
+float FGFEasing::EaseOutElastic(float t, float Amplitude, float Period)
 {
 	if (t == 0)
 	{
@@ -431,7 +431,7 @@ float GFEasing::EaseOutElastic(float t, float Amplitude, float Period)
 // {
 // 	return 1 + FMath::Pow(2, 10 * (-t)) * FMath::Sin((-t * 40 - 3) * PI / 6);
 // }
-float GFEasing::EaseInOutElastic(float t, float Amplitude, float Period)
+float FGFEasing::EaseInOutElastic(float t, float Amplitude, float Period)
 {
 	if (t == 0)
 	{
@@ -475,12 +475,12 @@ float GFEasing::EaseInOutElastic(float t, float Amplitude, float Period)
 // 	}
 // }
 
-float GFEasing::EaseInBounce(float t)
+float FGFEasing::EaseInBounce(float t)
 {
 	return 1 - EaseOutBounce(1 - t);
 }
 
-float GFEasing::EaseOutBounce(float t)
+float FGFEasing::EaseOutBounce(float t)
 {
 	float t2;
 
@@ -505,7 +505,7 @@ float GFEasing::EaseOutBounce(float t)
 	}
 }
 
-float GFEasing::EaseInOutBounce(float t)
+float FGFEasing::EaseInOutBounce(float t)
 {
 	float t2 = t * 2;
 	if (t2 < 1)
@@ -518,18 +518,18 @@ float GFEasing::EaseInOutBounce(float t)
 	}
 }
 
-float GFEasing::EaseInBack(float t, float Overshoot)
+float FGFEasing::EaseInBack(float t, float Overshoot)
 {
 	return t * t * ((Overshoot + 1) * t - Overshoot);
 }
 
-float GFEasing::EaseOutBack(float t, float Overshoot)
+float FGFEasing::EaseOutBack(float t, float Overshoot)
 {
 	float m = t - 1;
 	return 1 + m * m * (m * (Overshoot + 1) + Overshoot);
 }
 
-float GFEasing::EaseInOutBack(float t, float Overshoot)
+float FGFEasing::EaseInOutBack(float t, float Overshoot)
 {
 	float t2 = t * 2;
 	float s = Overshoot * BACK_INOUT_OVERSHOOT_MODIFIER;

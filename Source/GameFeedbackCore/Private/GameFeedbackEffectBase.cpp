@@ -37,11 +37,11 @@ void UGameFeedbackEffectBase::Stop()
 	if (BasicConfig.State == EGameFeedbackEffectState::Running || BasicConfig.State == EGameFeedbackEffectState::Paused)
 	{
 		OnStop(true);
+
+		BasicConfig.ElapsedTime = 0.0f;
+
+		BasicConfig.State = EGameFeedbackEffectState::Idle;
 	}
-
-	BasicConfig.ElapsedTime = 0.0f;
-
-	BasicConfig.State = EGameFeedbackEffectState::Idle;
 }
 
 bool UGameFeedbackEffectBase::Tick(float DeltaTime)

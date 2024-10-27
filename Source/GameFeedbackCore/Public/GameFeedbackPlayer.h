@@ -18,7 +18,7 @@ class GAMEFEEDBACKCORE_API UGameFeedbackPlayer : public UObject, public FTickabl
 private:
 	bool bIsRunning = false;
 
-	bool bAutoDestroy = false;
+	bool bAutoUnload = false;
 
 	UPROPERTY()
 	UGameFeedback* CurrentFeedback = nullptr;
@@ -34,7 +34,7 @@ public:
 	void LoadFeedback(UGameFeedback* Feedback);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void PlayFeedback(bool bUseAutoDestroy = false);
+	void PlayFeedback(bool bUseAutoUnload = false);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
 	void PauseFeedback() const;

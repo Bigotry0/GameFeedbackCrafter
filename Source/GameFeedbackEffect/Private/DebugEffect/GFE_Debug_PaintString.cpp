@@ -78,8 +78,3 @@ void UGFE_Debug_PaintString::OnTick(float DeltaTime)
 		                                 , TextDuration, Color, Text);
 	}
 }
-
-EGameFeedbackEffectType UGFE_Debug_PaintString::GetEffectType() const
-{
-	return EGameFeedbackEffectType::Debug;
-}

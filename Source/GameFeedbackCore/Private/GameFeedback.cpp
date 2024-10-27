@@ -48,17 +48,20 @@ void UGameFeedback::InitFeedback()
 		return;
 	}
 
-	ElapsedTime = 0.0f;
-
-	for (const auto GFE : GameFeedbackEffects)
+	if (State == EGameFeedbackState::NotInitialized)
 	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
+		ElapsedTime = 0.0f;
 
-		GFE->Init();
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
+
+			GFE->Init();
+		}
+
+		SetState(EGameFeedbackState::Idle);
 	}
-
-	SetState(EGameFeedbackState::Idle);
 }
 
 void UGameFeedback::PlayFeedback()
@@ -68,15 +71,18 @@ void UGameFeedback::PlayFeedback()
 		return;
 	}
 
-	for (const auto GFE : GameFeedbackEffects)
+	if (State == EGameFeedbackState::Idle)
 	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
 
-		GFE->Play();
+			GFE->Play();
+		}
+
+		SetState(EGameFeedbackState::Running);
 	}
-
-	SetState(EGameFeedbackState::Running);
 }
 
 void UGameFeedback::PauseFeedback()
@@ -86,15 +92,18 @@ void UGameFeedback::PauseFeedback()
 		return;
 	}
 
-	for (const auto GFE : GameFeedbackEffects)
+	if (State == EGameFeedbackState::Running)
 	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
 
-		GFE->Pause();
+			GFE->Pause();
+		}
+
+		SetState(EGameFeedbackState::Paused);
 	}
-
-	SetState(EGameFeedbackState::Paused);
 }
 
 void UGameFeedback::ResumeFeedback()
@@ -104,15 +113,18 @@ void UGameFeedback::ResumeFeedback()
 		return;
 	}
 
-	for (const auto GFE : GameFeedbackEffects)
+	if (State == EGameFeedbackState::Paused)
 	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
 
-		GFE->Resume();
+			GFE->Resume();
+		}
+
+		SetState(EGameFeedbackState::Running);
 	}
-
-	SetState(EGameFeedbackState::Running);
 }
 
 void UGameFeedback::StopFeedback()
@@ -122,21 +134,21 @@ void UGameFeedback::StopFeedback()
 		return;
 	}
 
-	for (const auto GFE : GameFeedbackEffects)
-	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
-
-		GFE->Stop();
-	}
-
 	if (State == EGameFeedbackState::Running || State == EGameFeedbackState::Paused)
 	{
-		OnGameFeedbackStopped.Broadcast(true);
-	}
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
 
-	ElapsedTime = 0.0f;
-	SetState(EGameFeedbackState::Idle);
+			GFE->Stop();
+		}
+
+		OnGameFeedbackStopped.Broadcast(true);
+
+		ElapsedTime = 0.0f;
+		SetState(EGameFeedbackState::Idle);
+	}
 }
 
 void UGameFeedback::TickFeedback(float DeltaTime)
@@ -146,25 +158,23 @@ void UGameFeedback::TickFeedback(float DeltaTime)
 		return;
 	}
 
-	if (State != EGameFeedbackState::Running)
+	if (State == EGameFeedbackState::Running)
 	{
-		return;
-	}
+		ElapsedTime += DeltaTime;
 
-	ElapsedTime += DeltaTime;
+		bool bAllIdle = true;
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
 
-	bool bAllIdle = true;
-	for (const auto GFE : GameFeedbackEffects)
-	{
-		if (!ValidateGameFeedbackEffect(GFE))
-			continue;
+			bAllIdle &= !GFE->Tick(DeltaTime);
+		}
 
-		bAllIdle &= !GFE->Tick(DeltaTime);
-	}
-
-	if (bAllIdle)
-	{
-		ElapsedTime = 0.0f;
-		SetState(EGameFeedbackState::Idle);
+		if (bAllIdle)
+		{
+			ElapsedTime = 0.0f;
+			SetState(EGameFeedbackState::Idle);
+		}
 	}
 }
