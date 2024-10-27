@@ -6,6 +6,13 @@
 #include "UObject/Object.h"
 #include "GameFeedbackEffectBase.generated.h"
 
+#define GFE_OnlyComponentContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Component"
+#define GFE_OnlyActorContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Actor"
+#define GFE_OnlyWorldContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::World"
+#define GFE_OnlyStaticContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Static"
+
+class UGameFeedback;
+
 UENUM()
 enum class EGameFeedbackEffectType : uint8
 {
@@ -38,20 +45,43 @@ enum class EGameFeedbackEffectState : uint8
 	Paused,
 };
 
+UENUM(Flags)
+enum class EGameFeedbackEffectContextType : uint8
+{
+	Actor,
+	Component,
+	World,
+	Static
+};
+
 //TODO: Add Custom Editor
 USTRUCT()
 struct FGameFeedbackEffectBasicConfig
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, Category = "Basic")
+	UPROPERTY(VisibleAnywhere, Category = "Basic|Time")
 	float ElapsedTime = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Basic")
+	UPROPERTY(EditAnywhere, Category = "Basic|Time")
 	float Duration = 0.2f;
 
-	UPROPERTY(VisibleAnywhere, Category = "Basic")
+	UPROPERTY(VisibleAnywhere, Category = "Basic|State")
 	EGameFeedbackEffectState State = EGameFeedbackEffectState::NotInitialized;
+
+	/**
+	 * Duration / ElapsedTime
+	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
+	 */
+	float GetProgress() const
+	{
+		if (Duration == 0.0f)
+		{
+			return 1.0f;
+		}
+
+		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+	}
 };
 
 static FColor GetTypeColor(EGameFeedbackEffectType Type)
@@ -87,16 +117,20 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Basic", meta=(DisplayPriority = 0))
 	FColor EffectTypeColor;
 
-	UGameFeedbackEffectBase()
-	{
-#if WITH_EDITOR
-		EffectTypeColor = GetTypeColor(GetEffectTypeFromChildClass());
-#endif
-	}
+	UGameFeedbackEffectBase();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Basic", meta=(DisplayPriority = 1))
 	FGameFeedbackEffectBasicConfig BasicConfig;
+
+	/**
+	 * Wrapper function for FGameFeedbackEffectBasicConfig::GetProgress()
+	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
+	 */
+	float GetEffectProgress() const
+	{
+		return BasicConfig.GetProgress();
+	}
 
 #if WITH_EDITOR
 	virtual EGameFeedbackEffectType GetEffectType() const
@@ -109,6 +143,33 @@ protected:
 		return GetEffectType();
 	}
 #endif
+
+private:
+	/**
+	 * Try to get the world, follow outer chain until UWorld is found.
+	 * @return UWorld if found, nullptr otherwise
+	 */
+	UWorld* TryGetContextWorld() const;
+
+protected:
+	/**
+	 * The context type of the effect.
+	 */
+	UPROPERTY(VisibleAnywhere, Category = "Basic", meta=(DisplayPriority = 2))
+	//TODO:Remove UPROPERTY, Now it's just for debugging
+	EGameFeedbackEffectContextType ContextType;
+
+	/**
+	 * Get the owner feedback of this effect.
+	 * @return Owner feedback if found, nullptr otherwise
+	 */
+	UGameFeedback* GetOwnerFeedback() const;
+
+	/**
+	 * Get the context type of the effect.
+	 * @return Context type of the effect
+	 */
+	EGameFeedbackEffectContextType GetContextType() const;
 
 public:
 	void Init();

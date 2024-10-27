@@ -2,6 +2,67 @@
 
 #include "GameFeedbackEffectBase.h"
 
+#include "GameFeedback.h"
+
+UGameFeedbackEffectBase::UGameFeedbackEffectBase()
+{
+	UGameFeedback* OwnerFeedback = GetOwnerFeedback();
+	if (OwnerFeedback)
+	{
+		UObject* Outer = OwnerFeedback->GetOuter();
+		if (!Outer)
+		{
+			ContextType = EGameFeedbackEffectContextType::Static;
+		}
+		else if (AActor* ContextActor = Cast<AActor>(Outer))
+		{
+			ContextType = EGameFeedbackEffectContextType::Actor;
+		}
+		else if (UActorComponent* ContextComponent = Cast<UActorComponent>(Outer))
+		{
+			ContextType = EGameFeedbackEffectContextType::Component;
+		}
+		else
+		{
+			if (UWorld* ContextWorld = TryGetContextWorld())
+			{
+				ContextType = EGameFeedbackEffectContextType::World;
+			}
+			else
+			{
+				ContextType = EGameFeedbackEffectContextType::Static;
+			}
+		}
+	}
+
+#if WITH_EDITOR
+	EffectTypeColor = GetTypeColor(GetEffectTypeFromChildClass());
+#endif
+}
+
+UGameFeedback* UGameFeedbackEffectBase::GetOwnerFeedback() const
+{
+	if (UObject* Outer = GetOuter())
+	{
+		if (UGameFeedback* OwnerFeedback = Cast<UGameFeedback>(Outer))
+		{
+			return OwnerFeedback;
+		}
+	}
+
+	return nullptr;
+}
+
+EGameFeedbackEffectContextType UGameFeedbackEffectBase::GetContextType() const
+{
+	return ContextType;
+}
+
+UWorld* UGameFeedbackEffectBase::TryGetContextWorld() const
+{
+	return GetWorld();
+}
+
 void UGameFeedbackEffectBase::Init()
 {
 	BasicConfig.ElapsedTime = 0.0f;
