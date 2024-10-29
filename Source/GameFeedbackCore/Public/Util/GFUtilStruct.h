@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFeedbackEffectBase.h"
 #include "GFEasing.h"
 #include "GFUtilStruct.generated.h"
 
 USTRUCT(BlueprintType)
-struct FGFInterpolator
+struct GAMEFEEDBACKCORE_API FGFInterpolator
 {
 	GENERATED_BODY()
 
@@ -97,3 +98,84 @@ public:
 		return OutAlpha;
 	}
 };
+
+USTRUCT(BlueprintType)
+struct GAMEFEEDBACKCORE_API FGFActorSelection
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection")
+	bool bUseSelfActor = true;
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection", DisplayName = "CustomActor",
+		meta = (EditCondition = "!bUseSelfActor", EditConditionHides = true))
+	TSoftObjectPtr<AActor> CustomActorSoftPtr = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection")
+	bool bUseRootComponent = true;
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection",
+		meta=(EditCondition = "!bUseRootComponent", EditConditionHides = true))
+	TSubclassOf<UActorComponent> ComponentClass = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection",
+		meta=(EditCondition = "!bUseRootComponent", EditConditionHides = true))
+	FName ComponentName = NAME_None;
+
+private:
+	EGameFeedbackEffectContextType ContextType = EGameFeedbackEffectContextType::Static;
+
+	UPROPERTY()
+	AActor* ContextActor = nullptr;
+
+	UPROPERTY()
+	AActor* CustomActor = nullptr;
+
+	bool IsOnlyActorOrComponentContext() const
+	{
+		return ContextType == EGameFeedbackEffectContextType::Actor || ContextType ==
+			EGameFeedbackEffectContextType::Component;
+	}
+
+	UPROPERTY()
+	const UActorComponent* TargetComponent = nullptr;
+
+public:
+	void Init(const EGameFeedbackEffectContextType InContextType, AActor* InContextActor);;
+
+	bool IsActorValid() const;
+	bool IsComponentValid();
+
+	AActor* GetTargetActor() const;
+	bool IsUseCustomTargetComponent();
+
+	template <typename T = UActorComponent>
+	const T* GetTargetComponent();
+};
+
+template <typename T>
+const T* FGFActorSelection::GetTargetComponent()
+{
+	if (!IsActorValid())
+	{
+		return nullptr;
+	}
+
+	if (TargetComponent)
+	{
+		return Cast<T>(TargetComponent);
+	}
+
+	const AActor* Target = GetTargetActor();
+	check(Target);
+	if (!bUseRootComponent)
+	{
+		TargetComponent = AActor::GetActorClassDefaultComponentByName(Target->GetClass(), ComponentClass,
+		                                                              ComponentName);
+	}
+	else
+	{
+		TargetComponent = Target->GetRootComponent();
+	}
+	return Cast<T>(TargetComponent);
+}

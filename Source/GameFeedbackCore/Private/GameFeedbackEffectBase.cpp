@@ -9,16 +9,16 @@ UGameFeedbackEffectBase::UGameFeedbackEffectBase()
 	UGameFeedback* OwnerFeedback = GetOwnerFeedback();
 	if (OwnerFeedback)
 	{
-		UObject* Outer = OwnerFeedback->GetOuter();
-		if (!Outer)
+		ContextObject = OwnerFeedback->GetOuter();
+		if (!ContextObject)
 		{
 			ContextType = EGameFeedbackEffectContextType::Static;
 		}
-		else if (AActor* ContextActor = Cast<AActor>(Outer))
+		else if (AActor* ContextActor = Cast<AActor>(ContextObject))
 		{
 			ContextType = EGameFeedbackEffectContextType::Actor;
 		}
-		else if (UActorComponent* ContextComponent = Cast<UActorComponent>(Outer))
+		else if (UActorComponent* ContextComponent = Cast<UActorComponent>(ContextObject))
 		{
 			ContextType = EGameFeedbackEffectContextType::Component;
 		}
@@ -40,6 +40,18 @@ UGameFeedbackEffectBase::UGameFeedbackEffectBase()
 #endif
 }
 
+float UGameFeedbackEffectBase::GetEffectProgress() const
+{
+	return BasicConfig.GetProgress();
+}
+
+//////////////// Context /////////////
+
+UWorld* UGameFeedbackEffectBase::TryGetContextWorld() const
+{
+	return GetWorld();
+}
+
 UGameFeedback* UGameFeedbackEffectBase::GetOwnerFeedback() const
 {
 	if (UObject* Outer = GetOuter())
@@ -58,10 +70,58 @@ EGameFeedbackEffectContextType UGameFeedbackEffectBase::GetContextType() const
 	return ContextType;
 }
 
-UWorld* UGameFeedbackEffectBase::TryGetContextWorld() const
+UObject* UGameFeedbackEffectBase::GetContextObject() const
 {
-	return GetWorld();
+	return ContextObject;
 }
+
+AActor* UGameFeedbackEffectBase::GetContextActor() const
+{
+	switch (ContextType)
+	{
+	case EGameFeedbackEffectContextType::Actor:
+		return Cast<AActor>(ContextObject);
+	case EGameFeedbackEffectContextType::Component:
+		return Cast<UActorComponent>(ContextObject)->GetOwner();
+	default:
+		break;
+	}
+
+	return nullptr;
+}
+
+bool UGameFeedbackEffectBase::IsOnlyComponentContext() const
+{
+	return ContextType == EGameFeedbackEffectContextType::Component;
+}
+
+bool UGameFeedbackEffectBase::IsOnlyActorContext() const
+{
+	return ContextType == EGameFeedbackEffectContextType::Actor;
+}
+
+bool UGameFeedbackEffectBase::IsOnlyWorldContext() const
+{
+	return ContextType == EGameFeedbackEffectContextType::World;
+}
+
+bool UGameFeedbackEffectBase::IsOnlyStaticContext() const
+{
+	return ContextType == EGameFeedbackEffectContextType::Static;
+}
+
+bool UGameFeedbackEffectBase::IsOnlyActorOrComponentContext() const
+{
+	return ContextType == EGameFeedbackEffectContextType::Actor || ContextType ==
+		EGameFeedbackEffectContextType::Component;
+}
+
+bool UGameFeedbackEffectBase::IsExcludeStaticContext() const
+{
+	return ContextType != EGameFeedbackEffectContextType::Static;
+}
+
+//////////////// Life cycle /////////////
 
 void UGameFeedbackEffectBase::Init()
 {

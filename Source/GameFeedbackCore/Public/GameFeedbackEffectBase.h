@@ -6,10 +6,12 @@
 #include "UObject/Object.h"
 #include "GameFeedbackEffectBase.generated.h"
 
-#define GFE_OnlyComponentContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Component"
-#define GFE_OnlyActorContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Actor"
-#define GFE_OnlyWorldContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::World"
-#define GFE_OnlyStaticContext EditCondition = "GetContextType() == EGameFeedbackEffectContextType::Static"
+#define GFE_OnlyComponentContext "IsOnlyComponentContext()"
+#define GFE_OnlyActorContext "IsOnlyActorContext()"
+#define GFE_OnlyWorldContext "IsOnlyWorldContext()"
+#define GFE_OnlyStaticContext "IsOnlyStaticContext()"
+#define GFE_OnlyActorOrComponentContext "IsOnlyActorOrComponentContext()"
+#define GFE_ExcludeStaticContext "IsExcludeStaticContext()"
 
 class UGameFeedback;
 
@@ -48,10 +50,10 @@ enum class EGameFeedbackEffectState : uint8
 UENUM(Flags)
 enum class EGameFeedbackEffectContextType : uint8
 {
+	Static,
 	Actor,
 	Component,
-	World,
-	Static
+	World
 };
 
 //TODO: Add Custom Editor
@@ -127,10 +129,7 @@ protected:
 	 * Wrapper function for FGameFeedbackEffectBasicConfig::GetProgress()
 	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
 	 */
-	float GetEffectProgress() const
-	{
-		return BasicConfig.GetProgress();
-	}
+	float GetEffectProgress() const;
 
 #if WITH_EDITOR
 	virtual EGameFeedbackEffectType GetEffectType() const
@@ -144,14 +143,8 @@ protected:
 	}
 #endif
 
+	///////////// Context /////////////
 private:
-	/**
-	 * Try to get the world, follow outer chain until UWorld is found.
-	 * @return UWorld if found, nullptr otherwise
-	 */
-	UWorld* TryGetContextWorld() const;
-
-protected:
 	/**
 	 * The context type of the effect.
 	 */
@@ -159,6 +152,16 @@ protected:
 	//TODO:Remove UPROPERTY, Now it's just for debugging
 	EGameFeedbackEffectContextType ContextType;
 
+	UPROPERTY()
+	UObject* ContextObject;
+
+	/**
+     * Try to get the world, follow outer chain until UWorld is found.
+     * @return UWorld if found, nullptr otherwise
+     */
+	UWorld* TryGetContextWorld() const;
+
+protected:
 	/**
 	 * Get the owner feedback of this effect.
 	 * @return Owner feedback if found, nullptr otherwise
@@ -171,6 +174,22 @@ protected:
 	 */
 	EGameFeedbackEffectContextType GetContextType() const;
 
+	/**
+	 * Get the context object of the effect.
+	 * @return Context object of the effect
+	 */
+	UObject* GetContextObject() const;
+
+	AActor* GetContextActor() const;
+
+	bool IsOnlyComponentContext() const;
+	bool IsOnlyActorContext() const;
+	bool IsOnlyWorldContext() const;
+	bool IsOnlyStaticContext() const;
+	bool IsOnlyActorOrComponentContext() const;
+	bool IsExcludeStaticContext() const;
+
+	//////////////// Life cycle ////////////////
 public:
 	void Init();
 
