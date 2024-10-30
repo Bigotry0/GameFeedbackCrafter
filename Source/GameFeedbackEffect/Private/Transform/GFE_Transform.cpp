@@ -8,46 +8,6 @@ void UGFE_TransformBase::OnInit()
 	Super::OnInit();
 
 	ActorSelection.Init(GetContextType(), GetContextActor());
-}
-
-void UGFE_Transform_Location::OnPlay()
-{
-	Super::OnPlay();
-
-	if (!bValid)
-	{
-		return;
-	}
-
-	switch (TransformSpace)
-	{
-	case ETransformSpace::World:
-		if (bUseCustomTargetComponent)
-		{
-			//TODO : Implement
-		}
-		else
-		{
-			ActorSelection.GetTargetActor()->SetActorLocation(StartLocation);
-		}
-		break;
-	case ETransformSpace::Local:
-		if (bUseCustomTargetComponent)
-		{
-			//TODO : Implement
-		}
-		else
-		{
-			ActorSelection.GetTargetActor()->SetActorRelativeLocation(StartLocation);
-		}
-	default:
-		break;
-	}
-}
-
-void UGFE_Transform_Location::OnInit()
-{
-	Super::OnInit();
 
 	if (ActorSelection.IsUseCustomTargetComponent())
 	{
@@ -64,6 +24,19 @@ void UGFE_Transform_Location::OnInit()
 	}
 }
 
+/// Location
+void UGFE_Transform_Location::OnPlay()
+{
+	Super::OnPlay();
+
+	if (!bValid)
+	{
+		return;
+	}
+
+	SetTargetLocation(StartLocation);
+}
+
 void UGFE_Transform_Location::OnStop(bool bInterrupted)
 {
 	Super::OnStop(bInterrupted);
@@ -73,31 +46,7 @@ void UGFE_Transform_Location::OnStop(bool bInterrupted)
 		return;
 	}
 
-	switch (TransformSpace)
-	{
-	case ETransformSpace::World:
-		if (bUseCustomTargetComponent)
-		{
-			//TODO : Implement
-		}
-		else
-		{
-			ActorSelection.GetTargetActor()->SetActorLocation(EndLocation);
-		}
-		break;
-	case ETransformSpace::Local:
-		if (bUseCustomTargetComponent)
-		{
-			//TODO : Implement
-		}
-		else
-		{
-			ActorSelection.GetTargetActor()->SetActorRelativeLocation(EndLocation);
-		}
-		break;
-	default:
-		break;
-	}
+	SetTargetLocation(EndLocation);
 }
 
 void UGFE_Transform_Location::OnTick(float DeltaTime)
@@ -109,15 +58,24 @@ void UGFE_Transform_Location::OnTick(float DeltaTime)
 		return;
 	}
 
-	float Alpha = GetInterpolatorAlpha();
-	FVector NewLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
+	const float Alpha = GetInterpolatorAlpha();
+	const FVector NewLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
 
+	SetTargetLocation(NewLocation);
+}
+
+void UGFE_Transform_Location::SetTargetLocation(FVector NewLocation)
+{
 	switch (TransformSpace)
 	{
 	case ETransformSpace::World:
 		if (bUseCustomTargetComponent)
 		{
-			//TODO : Implement
+			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
+			if (TargetComponent)
+			{
+				TargetComponent->SetWorldLocation(NewLocation);
+			}
 		}
 		else
 		{
@@ -127,7 +85,11 @@ void UGFE_Transform_Location::OnTick(float DeltaTime)
 	case ETransformSpace::Local:
 		if (bUseCustomTargetComponent)
 		{
-			//TODO : Implement
+			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
+			if (TargetComponent)
+			{
+				TargetComponent->SetRelativeLocation(NewLocation);
+			}
 		}
 		else
 		{
