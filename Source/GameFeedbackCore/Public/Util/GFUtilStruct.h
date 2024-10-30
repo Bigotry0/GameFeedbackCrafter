@@ -120,6 +120,10 @@ struct GAMEFEEDBACKCORE_API FGFActorSelection
 
 	UPROPERTY(EditAnywhere, Category = "ActorSelection",
 		meta=(EditCondition = "!bUseRootComponent", EditConditionHides = true))
+	bool bUseComponentName = false;
+
+	UPROPERTY(EditAnywhere, Category = "ActorSelection",
+		meta=(EditCondition = "!bUseRootComponent && bUseComponentName", EditConditionHides = true))
 	FName ComponentName = NAME_None;
 
 private:
@@ -138,7 +142,7 @@ private:
 	}
 
 	UPROPERTY()
-	const UActorComponent* TargetComponent = nullptr;
+	UActorComponent* TargetComponent = nullptr;
 
 public:
 	void Init(const EGameFeedbackEffectContextType InContextType, AActor* InContextActor);;
@@ -150,11 +154,11 @@ public:
 	bool IsUseCustomTargetComponent();
 
 	template <typename T = UActorComponent>
-	const T* GetTargetComponent();
+	T* GetTargetComponent();
 };
 
 template <typename T>
-const T* FGFActorSelection::GetTargetComponent()
+T* FGFActorSelection::GetTargetComponent()
 {
 	if (!IsActorValid())
 	{
@@ -166,12 +170,31 @@ const T* FGFActorSelection::GetTargetComponent()
 		return Cast<T>(TargetComponent);
 	}
 
-	const AActor* Target = GetTargetActor();
+	AActor* Target = GetTargetActor();
 	check(Target);
 	if (!bUseRootComponent)
 	{
-		TargetComponent = AActor::GetActorClassDefaultComponentByName(Target->GetClass(), ComponentClass,
-		                                                              ComponentName);
+		if (!bUseComponentName)
+		{
+			TargetComponent = Target->GetComponentByClass(ComponentClass);
+		}
+		else
+		{
+			TArray<UActorComponent*> Components;
+
+			Target->GetComponents(ComponentClass, Components);
+			if (Components.Num() > 0)
+			{
+				for (auto Component : Components)
+				{
+					if (Component->GetName() == ComponentName)
+					{
+						TargetComponent = Component;
+						break;
+					}
+				}
+			}
+		}
 	}
 	else
 	{
