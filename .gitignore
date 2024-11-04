@@ -26,7 +26,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 *.ipa
@@ -75,3 +74,11 @@ DerivedDataCache/*
 
 # Obsidian files
 /.obsidian
+
+# VsCode files
+.vscode/*
+
+# Python Tool Build Files
+PythonTools/build/*
+PythonTools/dist/*
+PythonTools/*.spec

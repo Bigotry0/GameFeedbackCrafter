@@ -17,6 +17,6 @@ The Effect library will be updated continuously, and the following is a catalog 
 - [Material](Effect/Material.md)
 - [Animation](Effect/Animation.md)
 - [Event](Effect/Event.md)
-- [Debug](Effect/Debug.md)
+- [Debug](Effect/DebugEffect.md)
 - ...
 - [Custom](Effect/Custom.md)
