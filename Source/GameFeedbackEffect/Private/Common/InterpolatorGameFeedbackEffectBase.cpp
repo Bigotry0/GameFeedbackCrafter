@@ -14,7 +14,14 @@ void UInterpolatorGameFeedbackEffectBase::OnStop(bool bInterrupted)
 {
 	Super::OnStop(bInterrupted);
 
-	Interpolator.UpdateAlpha(GetEffectProgress());
+	if (bInterrupted)
+	{
+		Interpolator.UpdateAlpha(GetEffectProgress());
+	}
+	else
+	{
+		Interpolator.UpdateAlpha(1);
+	}
 }
 
 void UInterpolatorGameFeedbackEffectBase::OnTick(float DeltaTime)
