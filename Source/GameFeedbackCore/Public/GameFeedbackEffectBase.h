@@ -119,7 +119,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Basic", meta=(DisplayPriority = 0))
 	FColor EffectTypeColor;
 
-	UGameFeedbackEffectBase();
+	// UGameFeedbackEffectBase();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Basic", meta=(DisplayPriority = 1))
@@ -145,6 +145,8 @@ protected:
 
 	///////////// Context /////////////
 private:
+	UPROPERTY()
+	UGameFeedback* OwnerGameFeedback;
 	/**
 	 * The context type of the effect.
 	 */
@@ -191,7 +193,8 @@ protected:
 
 	//////////////// Life cycle ////////////////
 public:
-	void Init();
+	void Init(UGameFeedback* InGameFeedback, const EGameFeedbackEffectContextType InContextType,
+	          UObject* InContextObject);
 
 	void Play();
 
@@ -202,6 +205,8 @@ public:
 	void Stop();
 
 	bool Tick(float DeltaTime);
+
+	void Reset();
 
 protected:
 	// Life cycle

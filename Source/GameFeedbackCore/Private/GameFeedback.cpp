@@ -41,7 +41,7 @@ void UGameFeedback::SetState(const EGameFeedbackState NewState)
 	}
 }
 
-void UGameFeedback::InitFeedback()
+void UGameFeedback::InitFeedback(const EGameFeedbackEffectContextType InContextType, UObject* InContextObject)
 {
 	if (!ValidateGameFeedbackEffects())
 	{
@@ -57,7 +57,7 @@ void UGameFeedback::InitFeedback()
 			if (!ValidateGameFeedbackEffect(GFE))
 				continue;
 
-			GFE->Init();
+			GFE->Init(this, InContextType, InContextObject);
 		}
 
 		SetState(EGameFeedbackState::Idle);
@@ -176,5 +176,27 @@ void UGameFeedback::TickFeedback(float DeltaTime)
 			ElapsedTime = 0.0f;
 			SetState(EGameFeedbackState::Idle);
 		}
+	}
+}
+
+void UGameFeedback::ResetFeedback()
+{
+	if (!ValidateGameFeedbackEffects())
+	{
+		return;
+	}
+
+	if (State != EGameFeedbackState::NotInitialized)
+	{
+		for (const auto GFE : GameFeedbackEffects)
+		{
+			if (!ValidateGameFeedbackEffect(GFE))
+				continue;
+
+			GFE->Stop();
+		}
+
+		ElapsedTime = 0.0f;
+		SetState(EGameFeedbackState::NotInitialized);
 	}
 }

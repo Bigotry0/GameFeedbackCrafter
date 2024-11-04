@@ -62,7 +62,7 @@ public:
 	/**
 	 * Init feedback
 	 */
-	void InitFeedback();
+	void InitFeedback(const EGameFeedbackEffectContextType InContextType, UObject* InContextObject);
 
 	/**
 	 * Play feedback
@@ -89,6 +89,11 @@ public:
 	 * @param DeltaTime DeltaTime
 	 */
 	void TickFeedback(float DeltaTime);
+
+	/**
+	 * Reset feedback
+	 */
+	void ResetFeedback();
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameFeedbackStateChanged, EGameFeedbackState, NewState);

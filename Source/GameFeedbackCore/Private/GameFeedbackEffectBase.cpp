@@ -4,42 +4,6 @@
 
 #include "GameFeedback.h"
 
-UGameFeedbackEffectBase::UGameFeedbackEffectBase()
-{
-	UGameFeedback* OwnerFeedback = GetOwnerFeedback();
-	if (OwnerFeedback)
-	{
-		ContextObject = OwnerFeedback->GetOuter();
-		if (!ContextObject)
-		{
-			ContextType = EGameFeedbackEffectContextType::Static;
-		}
-		else if (AActor* ContextActor = Cast<AActor>(ContextObject))
-		{
-			ContextType = EGameFeedbackEffectContextType::Actor;
-		}
-		else if (UActorComponent* ContextComponent = Cast<UActorComponent>(ContextObject))
-		{
-			ContextType = EGameFeedbackEffectContextType::Component;
-		}
-		else
-		{
-			if (UWorld* ContextWorld = TryGetContextWorld())
-			{
-				ContextType = EGameFeedbackEffectContextType::World;
-			}
-			else
-			{
-				ContextType = EGameFeedbackEffectContextType::Static;
-			}
-		}
-	}
-
-#if WITH_EDITOR
-	EffectTypeColor = GetTypeColor(GetEffectTypeFromChildClass());
-#endif
-}
-
 float UGameFeedbackEffectBase::GetEffectProgress() const
 {
 	return BasicConfig.GetProgress();
@@ -123,8 +87,13 @@ bool UGameFeedbackEffectBase::IsExcludeStaticContext() const
 
 //////////////// Life cycle /////////////
 
-void UGameFeedbackEffectBase::Init()
+void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFeedbackEffectContextType InContextType,
+                                   UObject* InContextObject)
 {
+	OwnerGameFeedback = InGameFeedback;
+	ContextType = InContextType;
+	ContextObject = InContextObject;
+
 	BasicConfig.ElapsedTime = 0.0f;
 
 	OnInit();
@@ -186,4 +155,14 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 	}
 
 	return false;
+}
+
+void UGameFeedbackEffectBase::Reset()
+{
+	if (BasicConfig.State != EGameFeedbackEffectState::NotInitialized)
+	{
+		BasicConfig.ElapsedTime = 0.0f;
+
+		BasicConfig.State = EGameFeedbackEffectState::NotInitialized;
+	}
 }

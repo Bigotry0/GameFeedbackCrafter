@@ -31,7 +31,7 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void LoadFeedback(UGameFeedback* Feedback);
+	void LoadFeedback(UGameFeedback* Feedback, const EGameFeedbackEffectContextType ContextType, UObject* Context);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
 	void PlayFeedback(bool bUseAutoUnload = false);
@@ -51,7 +51,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
 	void UnloadFeedback();
 
+	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
+	void ResetFeedback();
+
 protected:
 	virtual TStatId GetStatId() const override;
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	bool IsCurrentFeedbackValid() const;
+
+public:
+	bool IsRunning() const;
 };

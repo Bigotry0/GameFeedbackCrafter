@@ -5,6 +5,7 @@
 
 #include "GameFeedbackPlayer.h"
 
+DEFINE_LOG_CATEGORY(LogGameFeedbackCrafter);
 
 // Sets default values for this component's properties
 UGameFeedbackManagerComponent::UGameFeedbackManagerComponent()
@@ -28,7 +29,7 @@ bool UGameFeedbackManagerComponent::ValidateFeedback(FName FeedbackName) const
 	if (!Feedbacks.Contains(FeedbackName))
 	{
 #if WITH_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("FeedbackName is not found."));
+		UE_LOG(LogGameFeedbackCrafter, Warning, TEXT("FeedbackName: %s is not found."), *FeedbackName.ToString());
 #endif
 		return false;
 	}
@@ -38,9 +39,22 @@ bool UGameFeedbackManagerComponent::ValidateFeedback(FName FeedbackName) const
 
 UGameFeedbackPlayer* UGameFeedbackManagerComponent::GetFeedbackPlayerFromFeedbacksMap(FName FeedbackName)
 {
+	if (!Feedbacks.Contains(FeedbackName))
+	{
+#if WITH_EDITOR
+		UE_LOG(LogGameFeedbackCrafter, Warning, TEXT("FeedbackName is not found."));
+#endif
+		return nullptr;
+	}
+
 	if (!FeedbackPlayers.Contains(FeedbackName))
 	{
-		FeedbackPlayers.Add(FeedbackName, NewObject<UGameFeedbackPlayer>(this));
+		// Must be reset feedback. If not, the feedback effect can not initialize.
+		Feedbacks[FeedbackName]->ResetFeedback();
+
+		UGameFeedbackPlayer* FeedbackPlayer = NewObject<UGameFeedbackPlayer>(this);
+		FeedbackPlayer->LoadFeedback(Feedbacks[FeedbackName], EGameFeedbackEffectContextType::Component, this);
+		FeedbackPlayers.Add(FeedbackName, FeedbackPlayer);
 	}
 
 	return FeedbackPlayers[FeedbackName];
@@ -54,8 +68,10 @@ void UGameFeedbackManagerComponent::PlayFeedback(FName FeedbackName)
 	}
 
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
-	FeedbackPlayer->LoadFeedback(Feedbacks[FeedbackName]);
-	FeedbackPlayer->PlayFeedback();
+	if (FeedbackPlayer)
+	{
+		FeedbackPlayer->PlayFeedback();
+	}
 }
 
 void UGameFeedbackManagerComponent::PauseFeedback(FName FeedbackName)
@@ -66,7 +82,10 @@ void UGameFeedbackManagerComponent::PauseFeedback(FName FeedbackName)
 	}
 
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
-	FeedbackPlayer->PauseFeedback();
+	if (FeedbackPlayer)
+	{
+		FeedbackPlayer->PauseFeedback();
+	}
 }
 
 void UGameFeedbackManagerComponent::ResumeFeedback(FName FeedbackName)
@@ -77,7 +96,10 @@ void UGameFeedbackManagerComponent::ResumeFeedback(FName FeedbackName)
 	}
 
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
-	FeedbackPlayer->ResumeFeedback();
+	if (FeedbackPlayer)
+	{
+		FeedbackPlayer->ResumeFeedback();
+	}
 }
 
 void UGameFeedbackManagerComponent::StopFeedback(FName FeedbackName)
@@ -88,7 +110,10 @@ void UGameFeedbackManagerComponent::StopFeedback(FName FeedbackName)
 	}
 
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
-	FeedbackPlayer->StopFeedback();
+	if (FeedbackPlayer)
+	{
+		FeedbackPlayer->StopFeedback();
+	}
 }
 
 void UGameFeedbackManagerComponent::ReplayFeedback(FName FeedbackName)
@@ -99,5 +124,36 @@ void UGameFeedbackManagerComponent::ReplayFeedback(FName FeedbackName)
 	}
 
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
-	FeedbackPlayer->ReplayFeedback();
+	if (FeedbackPlayer)
+	{
+		FeedbackPlayer->ReplayFeedback();
+	}
 }
+
+#if WITH_EDITOR
+void UGameFeedbackManagerComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks))
+	{
+		const int32 ChangeIndex = PropertyChangedEvent.GetArrayIndex(
+			(GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks)).ToString());
+
+		TArray<FName> FeedbacksKeyArray;
+		Feedbacks.GenerateKeyArray(FeedbacksKeyArray);
+
+		if (!FeedbacksKeyArray.IsValidIndex(ChangeIndex))
+		{
+			return;
+		}
+
+		const FName FeedbackName = FeedbacksKeyArray[ChangeIndex];
+
+		if (FeedbackPlayers.Contains(FeedbackName))
+		{
+			ReplayFeedback(FeedbackName);
+		}
+	}
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+#endif

@@ -22,47 +22,93 @@ void UGameFeedbackPlayer::OnGameFeedbackStopped(bool bInterrupted)
 	}
 }
 
-void UGameFeedbackPlayer::LoadFeedback(UGameFeedback* Feedback)
+void UGameFeedbackPlayer::LoadFeedback(UGameFeedback* Feedback, const EGameFeedbackEffectContextType ContextType,
+                                       UObject* Context)
 {
 	CurrentFeedback = Feedback;
 
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->OnGameFeedbackStateChanged.AddDynamic(this, &UGameFeedbackPlayer::OnGameFeedbackStateChanged);
 	CurrentFeedback->OnGameFeedbackStopped.AddDynamic(this, &UGameFeedbackPlayer::OnGameFeedbackStopped);
-	CurrentFeedback->InitFeedback();
+	CurrentFeedback->InitFeedback(ContextType, Context);
 }
 
 void UGameFeedbackPlayer::PlayFeedback(bool bUseAutoUnload)
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	bAutoUnload = bUseAutoUnload;
 	CurrentFeedback->PlayFeedback();
 }
 
 void UGameFeedbackPlayer::PauseFeedback() const
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->PauseFeedback();
 }
 
 void UGameFeedbackPlayer::ResumeFeedback() const
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->ResumeFeedback();
 }
 
 void UGameFeedbackPlayer::StopFeedback() const
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->StopFeedback();
 }
 
 void UGameFeedbackPlayer::ReplayFeedback() const
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->StopFeedback();
 	CurrentFeedback->PlayFeedback();
 }
 
 void UGameFeedbackPlayer::UnloadFeedback()
 {
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
 	CurrentFeedback->OnGameFeedbackStateChanged.RemoveDynamic(this, &UGameFeedbackPlayer::OnGameFeedbackStateChanged);
 	CurrentFeedback->OnGameFeedbackStopped.RemoveDynamic(this, &UGameFeedbackPlayer::OnGameFeedbackStopped);
 	CurrentFeedback = nullptr;
+}
+
+void UGameFeedbackPlayer::ResetFeedback()
+{
+	if (!IsCurrentFeedbackValid())
+	{
+		return;
+	}
+
+	CurrentFeedback->ResetFeedback();
 }
 
 TStatId UGameFeedbackPlayer::GetStatId() const
@@ -76,4 +122,14 @@ void UGameFeedbackPlayer::Tick(float DeltaTime)
 	{
 		CurrentFeedback->TickFeedback(DeltaTime);
 	}
+}
+
+bool UGameFeedbackPlayer::IsCurrentFeedbackValid() const
+{
+	return CurrentFeedback != nullptr;
+}
+
+bool UGameFeedbackPlayer::IsRunning() const
+{
+	return bIsRunning;
 }
