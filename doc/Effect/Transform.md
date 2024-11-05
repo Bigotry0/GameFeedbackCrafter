@@ -7,6 +7,10 @@
 	Actor selection, used to determine the target actor/component. You can specify the target actor/component directly or use the self actor/component. Self actor/component is the context actor/component of the effect.
 - `TransformSpace`: `ETransformSpace`
 	Transform space for the target actor/component. (World or Local)
+- `bUseNoise`: `bool`
+	Whether to use noise for the transform effect.
+- `Noise`: `FGFNoise`
+	Noise settings for the transform effect.
 
 ## Location
 **Class Name:** UGFE_Transform_Location \

@@ -8,6 +8,10 @@
 #include "GFE_Time.generated.h"
 
 
+/**
+ * Freezes the game for a short period of time.
+ * Can quickly create a slow-motion effect.
+ */
 UCLASS()
 class UGFE_Time_FreezeFrame : public UGameFeedbackEffectBase
 {
@@ -39,6 +43,11 @@ protected:
 #endif
 };
 
+/**
+ * Interpolates the global time dilation value over time.
+ * Can be used to create a smooth transition between time dilation values.
+ * This effect is potentially useful for creating some kind of time manipulation effect.
+ */
 UCLASS()
 class UGFE_Time_TimeFollow : public UGFE_InterpolatorGameFeedbackEffectBase
 {
