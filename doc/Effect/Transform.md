@@ -24,10 +24,10 @@
 **Description:** Transforms the rotation of the target actor/component. \
 **Configuration:**
 - `RotateMode`: `ERotateMode`
-	Rotation mode for the target actor/component
-	Absolute: Set the rotation directly
-	Additive: Add the rotation to the current rotation
-	ToTarget: Rotate to the target rotation
+	Rotation mode for the target actor/component \
+	Absolute: Set the rotation directly \
+	Additive: Add the rotation to the current rotation \
+	ToTarget: Rotate to the target rotation \
 - `StartRotation`: `FRotator`
 	Start rotation of the target actor/component.
 - `EndRotation`: `FRotator`

@@ -1,6 +1,8 @@
 import os
 import re
 
+normal_end_punctuation = (',', '.', ':', ';', '!', '?', ')', ']')
+
 def collect_header_files(directory):
     header_files = {}
     for root, _, files in os.walk(directory):
@@ -49,8 +51,8 @@ def format_comment(comment):
     formatted_comment = ""
     for line in lines:
         line = line.strip().lstrip('*').strip()
-        if line and not line.endswith(('.', '!', '?')):
-            line += '\n\t'
+        if line and not line.endswith(normal_end_punctuation):
+            line += ' \\\n\t'
         else:
             line += ' '
         formatted_comment += line

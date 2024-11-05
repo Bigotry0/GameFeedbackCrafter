@@ -119,9 +119,9 @@ private:
 
 protected:
 	/**
-	 * Rotation mode for the target actor/component
-	 * Absolute: Set the rotation directly
-	 * Additive: Add the rotation to the current rotation
+	 * Rotation mode for the target actor/component 
+	 * Absolute: Set the rotation directly 
+	 * Additive: Add the rotation to the current rotation 
 	 * ToTarget: Rotate to the target rotation
 	 */
 	UPROPERTY(EditAnywhere, Category = "Transform|Rotation")
