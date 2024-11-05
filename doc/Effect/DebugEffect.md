@@ -1,7 +1,7 @@
 ## PaintString
-**Class Name:** UGFE_Debug_PaintString
-**Effect Type:** Debug
-**Description:** 
+**Class Name:** UGFE_Debug_PaintString \
+**Effect Type:** Debug \
+**Description:**  \
 **Configuration:**
 - `Text`: `FString`
 	The text to be displayed on screen.

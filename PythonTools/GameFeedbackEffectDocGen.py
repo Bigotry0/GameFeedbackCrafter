@@ -24,7 +24,7 @@ def parse_header_file(file_path):
     
     for class_comment, class_name in classes:
         # 只保留第一个多行注释
-        class_comment = class_comment.split('*/', 1)[0]
+        class_comment = class_comment.split('/**', 10000)[-1]
         class_start = content.find(class_name)
         class_end = content.find('};', class_start) + 2
         class_content = content[class_start:class_end]
@@ -33,7 +33,7 @@ def parse_header_file(file_path):
         processed_fields = []
         for field_comment, type_name, item_name in fields:
             if field_comment:
-                field_comment = field_comment.split('*/', 1)[0]
+                field_comment = field_comment.split('/**', 10000)[-1]
             else:
                 field_comment = ""
             processed_fields.append((field_comment, type_name, item_name))
@@ -75,9 +75,9 @@ def generate_documentation(class_fields):
         
         description = format_comment(class_comment)
         documentation += f"## {effect_name}\n"
-        documentation += f"**Class Name:** {class_name}\n"
-        documentation += f"**Effect Type:** {effect_type}\n"
-        documentation += f"**Description:** {description}\n"
+        documentation += f"**Class Name:** {class_name} \\\n"
+        documentation += f"**Effect Type:** {effect_type} \\\n"
+        documentation += f"**Description:** {description} \\\n"
         if(len(fields) > 0):
             documentation += "**Configuration:**\n"
             
