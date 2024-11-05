@@ -24,6 +24,16 @@ void UGFE_TransformBase::OnInit()
 	}
 }
 
+void UGFE_TransformBase::OnPlay()
+{
+	Super::OnPlay();
+
+	if (bUseNoise)
+	{
+		Noise.UpdateNoise();
+	}
+}
+
 #pragma region Transform_Location
 void UGFE_Transform_Location::OnPlay()
 {
@@ -71,12 +81,16 @@ void UGFE_Transform_Location::SetTargetLocation(const FVector& NewLocation)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetWorldLocation(NewLocation);
+				TargetComponent->SetWorldLocation(NewLocation + (bUseNoise
+					                                                 ? Noise.GetNoise3D(GetEffectProgress())
+					                                                 : FVector::ZeroVector));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorLocation(NewLocation);
+			ActorSelection.GetTargetActor()->SetActorLocation(NewLocation + (bUseNoise
+				                                                                 ? Noise.GetNoise3D(GetEffectProgress())
+				                                                                 : FVector::ZeroVector));
 		}
 		break;
 	case ETransformSpace::Local:
@@ -85,12 +99,16 @@ void UGFE_Transform_Location::SetTargetLocation(const FVector& NewLocation)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetRelativeLocation(NewLocation);
+				TargetComponent->SetRelativeLocation(NewLocation + (bUseNoise
+					                                                    ? Noise.GetNoise3D(GetEffectProgress())
+					                                                    : FVector::ZeroVector));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorRelativeLocation(NewLocation);
+			ActorSelection.GetTargetActor()->SetActorRelativeLocation(NewLocation + (bUseNoise
+					? Noise.GetNoise3D(GetEffectProgress())
+					: FVector::ZeroVector));
 		}
 		break;
 	default:
@@ -194,12 +212,17 @@ void UGFE_Transform_Rotation::SetTargetRotation(const FRotator& NewRotation)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetWorldRotation(NewRotation);
+				TargetComponent->SetWorldRotation(NewRotation + (bUseNoise
+					                                                 ? Noise.GetNoise3D(GetEffectProgress()).Rotation()
+					                                                 : FRotator::ZeroRotator));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorRotation(NewRotation);
+			ActorSelection.GetTargetActor()->SetActorRotation(NewRotation + (bUseNoise
+				                                                                 ? Noise.GetNoise3D(GetEffectProgress())
+				                                                                 .Rotation()
+				                                                                 : FRotator::ZeroRotator));
 		}
 		break;
 	case ETransformSpace::Local:
@@ -208,12 +231,17 @@ void UGFE_Transform_Rotation::SetTargetRotation(const FRotator& NewRotation)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetRelativeRotation(NewRotation);
+				TargetComponent->SetRelativeRotation(NewRotation + (bUseNoise
+					                                                    ? Noise.GetNoise3D(GetEffectProgress()).
+					                                                    Rotation()
+					                                                    : FRotator::ZeroRotator));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorRelativeRotation(NewRotation);
+			ActorSelection.GetTargetActor()->SetActorRelativeRotation(NewRotation + (bUseNoise
+					? Noise.GetNoise3D(GetEffectProgress()).Rotation()
+					: FRotator::ZeroRotator));
 		}
 		break;
 	default:
@@ -269,12 +297,16 @@ void UGFE_Transform_Scale::SetTargetScale(const FVector& NewScale)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetWorldScale3D(NewScale);
+				TargetComponent->SetWorldScale3D(NewScale + (bUseNoise
+					                                             ? Noise.GetNoise3D(GetEffectProgress())
+					                                             : FVector::ZeroVector));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorScale3D(NewScale);
+			ActorSelection.GetTargetActor()->SetActorScale3D(NewScale + (bUseNoise
+				                                                             ? Noise.GetNoise3D(GetEffectProgress())
+				                                                             : FVector::ZeroVector));
 		}
 		break;
 	case ETransformSpace::Local:
@@ -283,12 +315,16 @@ void UGFE_Transform_Scale::SetTargetScale(const FVector& NewScale)
 			USceneComponent* TargetComponent = Cast<USceneComponent>(ActorSelection.GetTargetComponent());
 			if (TargetComponent)
 			{
-				TargetComponent->SetRelativeScale3D(NewScale);
+				TargetComponent->SetRelativeScale3D(NewScale + (bUseNoise
+					                                                ? Noise.GetNoise3D(GetEffectProgress())
+					                                                : FVector::ZeroVector));
 			}
 		}
 		else
 		{
-			ActorSelection.GetTargetActor()->SetActorRelativeScale3D(NewScale);
+			ActorSelection.GetTargetActor()->SetActorRelativeScale3D(NewScale + (bUseNoise
+					? Noise.GetNoise3D(GetEffectProgress())
+					: FVector::ZeroVector));
 		}
 		break;
 	default:

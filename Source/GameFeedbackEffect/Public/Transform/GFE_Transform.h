@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Common/GFE_InterpolatorGameFeedbackEffectBase.h"
+#include "Util/GFNoise.h"
 #include "GFE_Transform.generated.h"
 
 UENUM(BlueprintType)
@@ -40,6 +41,7 @@ protected:
 	bool bUseCustomTargetComponent = false;
 
 	virtual void OnInit() override;
+	virtual void OnPlay() override;
 
 #if WITH_EDITOR
 	virtual EGameFeedbackEffectType GetEffectType() const override
@@ -47,6 +49,20 @@ protected:
 		return EGameFeedbackEffectType::Transform;
 	}
 #endif
+
+protected:
+	/**
+	 * Whether to use noise for the transform effect.
+	 */
+	UPROPERTY(EditAnywhere, Category = "Transform|Noise")
+	bool bUseNoise = false;
+
+	/**
+	 * Noise settings for the transform effect.
+	 */
+	UPROPERTY(EditAnywhere, Category = "Transform|Noise",
+		meta = (EditCondition = "bUseNoise", EditConditionHides = true))
+	FGFNoise Noise;
 };
 
 #pragma region Transform_Location
