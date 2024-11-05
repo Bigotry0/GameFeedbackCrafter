@@ -49,13 +49,24 @@ def format_comment(comment):
         return ""
     lines = comment.strip().split('\n')
     formatted_comment = ""
+
+    current_line_index = 0
+    lines_count = len(lines)
+
     for line in lines:
         line = line.strip().lstrip('*').strip()
-        if line and not line.endswith(normal_end_punctuation):
-            line += ' \\\n\t'
-        else:
-            line += ' '
+
+        if current_line_index < lines_count - 1:
+            if line and line.endswith(('\\')):
+                line += '\n\t'
+            elif not line.endswith(normal_end_punctuation):
+                line += ' \\\n\t'
+            else:
+                line += ' '
+
         formatted_comment += line
+
+        current_line_index += 1
     return formatted_comment.strip()
 
 def generate_documentation(class_fields):
