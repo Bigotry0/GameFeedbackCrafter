@@ -115,7 +115,14 @@ void UGameFeedbackEffectBase::Play()
 {
 	OnPlay();
 
-	BasicConfig.State = EGameFeedbackEffectState::Running;
+	if (BasicConfig.Timing.IsUseDelay())
+	{
+		BasicConfig.State = EGameFeedbackEffectState::Delay;
+	}
+	else
+	{
+		BasicConfig.State = EGameFeedbackEffectState::Running;
+	}
 }
 
 void UGameFeedbackEffectBase::Pause()
@@ -146,8 +153,9 @@ void UGameFeedbackEffectBase::Stop()
 
 bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 {
-	if (BasicConfig.State == EGameFeedbackEffectState::Running)
+	switch (BasicConfig.State)
 	{
+	case EGameFeedbackEffectState::Running:
 		OnTick(DeltaTime);
 
 		if (!BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation()))
@@ -160,6 +168,24 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 		}
 
 		return true;
+	case EGameFeedbackEffectState::Delay:
+		if (!BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation()))
+		{
+			OnStop(false);
+
+			BasicConfig.Timing.Reset();
+
+			BasicConfig.State = EGameFeedbackEffectState::Idle;
+		}
+
+		if (!BasicConfig.Timing.IsOnDelay())
+		{
+			BasicConfig.State = EGameFeedbackEffectState::Running;
+		}
+
+		return true;
+	default:
+		break;
 	}
 
 	return false;

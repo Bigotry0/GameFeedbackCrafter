@@ -44,6 +44,7 @@ enum class EGameFeedbackEffectState : uint8
 	NotInitialized,
 	Idle,
 	Running,
+	Delay,
 	Paused,
 };
 
@@ -69,14 +70,17 @@ struct FGameFeedbackEffectTiming
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Basic|Time")
-	ETimeScaleMode TimeScaleMode = ETimeScaleMode::Scaled;
-
-	UPROPERTY(VisibleAnywhere, Category = "Basic|Time")
+	UPROPERTY(VisibleAnywhere, Category = "Time")
 	float ElapsedTime = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Basic|Time")
+	UPROPERTY(EditAnywhere, Category = "Time")
 	float Duration = 0.2f;
+
+	UPROPERTY(EditAnywhere, Category = "Time|TimeScale")
+	ETimeScaleMode TimeScaleMode = ETimeScaleMode::Scaled;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Delay")
+	float Delay = 0.0f;
 
 	/**
 	 * Tick the timing.
@@ -102,7 +106,14 @@ public:
 	 */
 	void Reset()
 	{
-		ElapsedTime = 0.0f;
+		if (Delay > 0.0f)
+		{
+			ElapsedTime = -Delay;
+		}
+		else
+		{
+			ElapsedTime = 0.0f;
+		}
 	}
 
 	/**
@@ -117,6 +128,16 @@ public:
 		}
 
 		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+	}
+
+	bool IsUseDelay() const
+	{
+		return Delay > 0.0f;
+	}
+
+	bool IsOnDelay() const
+	{
+		return ElapsedTime < 0.0f;
 	}
 };
 
