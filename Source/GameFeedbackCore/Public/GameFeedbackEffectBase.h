@@ -56,11 +56,21 @@ enum class EGameFeedbackEffectContextType : uint8
 	World
 };
 
-//TODO: Add Custom Editor
+UENUM(BlueprintType)
+enum class ETimeScaleMode : uint8
+{
+	Scaled,
+	Unscaled
+};
+
 USTRUCT()
-struct FGameFeedbackEffectBasicConfig
+struct FGameFeedbackEffectTiming
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, Category = "Basic|Time")
+	ETimeScaleMode TimeScaleMode = ETimeScaleMode::Scaled;
 
 	UPROPERTY(VisibleAnywhere, Category = "Basic|Time")
 	float ElapsedTime = 0.0f;
@@ -68,8 +78,32 @@ struct FGameFeedbackEffectBasicConfig
 	UPROPERTY(EditAnywhere, Category = "Basic|Time")
 	float Duration = 0.2f;
 
-	UPROPERTY(VisibleAnywhere, Category = "Basic|State")
-	EGameFeedbackEffectState State = EGameFeedbackEffectState::NotInitialized;
+	/**
+	 * Tick the timing.
+	 * @param DeltaTime The time since the last tick.
+	 * @param TimeDilation The time dilation value of the world.
+	 * @return true if the effect is still running, false otherwise
+	 */
+	bool Tick(float DeltaTime, float TimeDilation)
+	{
+		if (Duration == 0.0f)
+		{
+			return false;
+		}
+
+		const float DeltaTimeScaled = TimeScaleMode == ETimeScaleMode::Scaled ? DeltaTime * TimeDilation : DeltaTime;
+		ElapsedTime += DeltaTimeScaled;
+
+		return !(ElapsedTime >= Duration);
+	}
+
+	/**
+	 * Reset the timing.
+	 */
+	void Reset()
+	{
+		ElapsedTime = 0.0f;
+	}
 
 	/**
 	 * Duration / ElapsedTime
@@ -83,6 +117,28 @@ struct FGameFeedbackEffectBasicConfig
 		}
 
 		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+	}
+};
+
+//TODO: Add Custom Editor
+USTRUCT()
+struct FGameFeedbackEffectBasicConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Basic|Time")
+	FGameFeedbackEffectTiming Timing;
+
+	UPROPERTY(VisibleAnywhere, Category = "Basic|State")
+	EGameFeedbackEffectState State = EGameFeedbackEffectState::NotInitialized;
+
+	/**
+	 * Wrapper function for FGameFeedbackEffectTiming::GetProgress()
+	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
+	 */
+	float GetProgress() const
+	{
+		return Timing.GetProgress();
 	}
 };
 
@@ -144,6 +200,8 @@ protected:
 #endif
 
 	///////////// Context /////////////
+#pragma region Context
+
 private:
 	UPROPERTY()
 	UGameFeedback* OwnerGameFeedback;
@@ -158,7 +216,8 @@ private:
 	UObject* ContextObject;
 
 	/**
-     * Try to get the world, follow outer chain until UWorld is found.
+     * Try to get the world, follow the context object outer chain to find the world.
+     * If the context object is nullptr, follow this GFE outer chain to find the world.
      * @return UWorld if found, nullptr otherwise
      */
 	UWorld* TryGetContextWorld() const;
@@ -190,8 +249,10 @@ protected:
 	bool IsOnlyStaticContext() const;
 	bool IsOnlyActorOrComponentContext() const;
 	bool IsExcludeStaticContext() const;
-
+#pragma endregion
 	//////////////// Life cycle ////////////////
+#pragma region LifeCycle
+
 public:
 	void Init(UGameFeedback* InGameFeedback, const EGameFeedbackEffectContextType InContextType,
 	          UObject* InContextObject);
@@ -233,4 +294,14 @@ protected:
 	virtual void OnTick(float DeltaTime)
 	{
 	}
+#pragma endregion
+	//////////////// Timing ////////////////
+#pragma region Timing
+
+private:
+	UPROPERTY()
+	AWorldSettings* ContextWorldSettings = nullptr;
+
+	float GetContextWorldTimeDilation() const;
+#pragma endregion
 };

@@ -10,9 +10,14 @@ float UGameFeedbackEffectBase::GetEffectProgress() const
 }
 
 //////////////// Context /////////////
-
+#pragma region Context
 UWorld* UGameFeedbackEffectBase::TryGetContextWorld() const
 {
+	if (ContextObject)
+	{
+		return ContextObject->GetWorld();
+	}
+
 	return GetWorld();
 }
 
@@ -84,9 +89,9 @@ bool UGameFeedbackEffectBase::IsExcludeStaticContext() const
 {
 	return ContextType != EGameFeedbackEffectContextType::Static;
 }
-
+#pragma endregion
 //////////////// Life cycle /////////////
-
+#pragma region LifeCycle
 void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFeedbackEffectContextType InContextType,
                                    UObject* InContextObject)
 {
@@ -94,7 +99,12 @@ void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFee
 	ContextType = InContextType;
 	ContextObject = InContextObject;
 
-	BasicConfig.ElapsedTime = 0.0f;
+	if (UWorld* World = TryGetContextWorld())
+	{
+		ContextWorldSettings = World->GetWorldSettings();
+	}
+
+	BasicConfig.Timing.Reset();
 
 	OnInit();
 
@@ -128,7 +138,7 @@ void UGameFeedbackEffectBase::Stop()
 	{
 		OnStop(true);
 
-		BasicConfig.ElapsedTime = 0.0f;
+		BasicConfig.Timing.Reset();
 
 		BasicConfig.State = EGameFeedbackEffectState::Idle;
 	}
@@ -140,13 +150,11 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 	{
 		OnTick(DeltaTime);
 
-		BasicConfig.ElapsedTime += DeltaTime;
-
-		if (BasicConfig.ElapsedTime >= BasicConfig.Duration)
+		if (!BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation()))
 		{
 			OnStop(false);
 
-			BasicConfig.ElapsedTime = 0.0f;
+			BasicConfig.Timing.Reset();
 
 			BasicConfig.State = EGameFeedbackEffectState::Idle;
 		}
@@ -161,8 +169,16 @@ void UGameFeedbackEffectBase::Reset()
 {
 	if (BasicConfig.State != EGameFeedbackEffectState::NotInitialized)
 	{
-		BasicConfig.ElapsedTime = 0.0f;
+		BasicConfig.Timing.Reset();
 
 		BasicConfig.State = EGameFeedbackEffectState::NotInitialized;
 	}
 }
+#pragma endregion
+
+#pragma region Timing
+float UGameFeedbackEffectBase::GetContextWorldTimeDilation() const
+{
+	return ContextWorldSettings ? ContextWorldSettings->TimeDilation : 1.0f;
+}
+#pragma endregion
