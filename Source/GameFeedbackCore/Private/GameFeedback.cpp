@@ -71,7 +71,7 @@ void UGameFeedback::PlayFeedback()
 		return;
 	}
 
-	if (State == EGameFeedbackState::Idle)
+	if (State == EGameFeedbackState::Idle || State == EGameFeedbackState::Running)
 	{
 		for (const auto GFE : GameFeedbackEffects)
 		{
@@ -136,18 +136,25 @@ void UGameFeedback::StopFeedback()
 
 	if (State == EGameFeedbackState::Running || State == EGameFeedbackState::Paused)
 	{
+		bool bAnyOnCooldown = false;
+
+		bool bGFEOnCooldown;
 		for (const auto GFE : GameFeedbackEffects)
 		{
 			if (!ValidateGameFeedbackEffect(GFE))
 				continue;
 
-			GFE->Stop();
+			GFE->Stop(bGFEOnCooldown);
+			bAnyOnCooldown |= bGFEOnCooldown;
 		}
 
 		OnGameFeedbackStopped.Broadcast(true);
 
-		ElapsedTime = 0.0f;
-		SetState(EGameFeedbackState::Idle);
+		if (!bAnyOnCooldown)
+		{
+			ElapsedTime = 0.0f;
+			SetState(EGameFeedbackState::Idle);
+		}
 	}
 }
 
@@ -193,7 +200,7 @@ void UGameFeedback::ResetFeedback()
 			if (!ValidateGameFeedbackEffect(GFE))
 				continue;
 
-			GFE->Stop();
+			GFE->Reset();
 		}
 
 		ElapsedTime = 0.0f;

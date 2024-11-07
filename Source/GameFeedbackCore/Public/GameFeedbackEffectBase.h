@@ -45,6 +45,7 @@ enum class EGameFeedbackEffectState : uint8
 	Idle,
 	Running,
 	Delay,
+	Cooldown,
 	Paused,
 };
 
@@ -69,6 +70,9 @@ struct FGameFeedbackEffectTiming
 {
 	GENERATED_BODY()
 
+private:
+	uint32 RepeatCount = 0;
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Time")
 	float ElapsedTime = 0.0f;
@@ -81,6 +85,18 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Time|Delay")
 	float Delay = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Delay")
+	float CoolDown = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
+	uint32 NumOfRepeats = 0;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
+	bool bRepeatForever = false;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
+	float DelayBetweenRepeats = 1.0f;
 
 	/**
 	 * Tick the timing.
@@ -117,6 +133,14 @@ public:
 	}
 
 	/**
+	 * Force reset the timing to zero.
+	 */
+	void ResetToZero()
+	{
+		ElapsedTime = 0.0f;
+	}
+
+	/**
 	 * Duration / ElapsedTime
 	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
 	 */
@@ -139,6 +163,26 @@ public:
 	{
 		return ElapsedTime < 0.0f;
 	}
+
+	bool IsUseCoolDown() const
+	{
+		return CoolDown > 0.0f;
+	}
+
+	bool IsOnCoolDown() const
+	{
+		return IsUseCoolDown() && ElapsedTime >= Duration;
+	}
+
+	bool IsCoolDownEnd() const
+	{
+		return ElapsedTime >= Duration + CoolDown;
+	}
+
+	void ResetAtEnd()
+	{
+		ElapsedTime = Duration;
+	}
 };
 
 //TODO: Add Custom Editor
@@ -147,6 +191,10 @@ struct FGameFeedbackEffectBasicConfig
 {
 	GENERATED_BODY()
 
+private:
+	bool bShouldPlayAfterCooldown = false;
+
+public:
 	UPROPERTY(EditAnywhere, Category = "Basic|Time")
 	FGameFeedbackEffectTiming Timing;
 
@@ -160,6 +208,16 @@ struct FGameFeedbackEffectBasicConfig
 	float GetProgress() const
 	{
 		return Timing.GetProgress();
+	}
+
+	bool ShouldPlayAfterCooldown() const
+	{
+		return bShouldPlayAfterCooldown;
+	}
+
+	void SetShouldPlayAfterCooldown(bool bShouldPlay)
+	{
+		bShouldPlayAfterCooldown = bShouldPlay;
 	}
 };
 
@@ -284,7 +342,11 @@ public:
 
 	void Resume();
 
-	void Stop();
+	/**
+	 * Stop the effect.
+	 * @return true if the effect successfully stopped, false the effect in cooldown or ready to cooldown.
+	 */
+	void Stop(bool& bOnCooldown);
 
 	bool Tick(float DeltaTime);
 
@@ -315,6 +377,9 @@ protected:
 	virtual void OnTick(float DeltaTime)
 	{
 	}
+
+private:
+	bool InIdleOrNotInitializedState() const;
 #pragma endregion
 	//////////////// Timing ////////////////
 #pragma region Timing

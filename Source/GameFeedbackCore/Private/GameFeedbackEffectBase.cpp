@@ -105,6 +105,7 @@ void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFee
 	}
 
 	BasicConfig.Timing.Reset();
+	BasicConfig.SetShouldPlayAfterCooldown(false);
 
 	OnInit();
 
@@ -113,41 +114,97 @@ void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFee
 
 void UGameFeedbackEffectBase::Play()
 {
-	OnPlay();
+	switch (BasicConfig.State)
+	{
+	case EGameFeedbackEffectState::Cooldown:
+		BasicConfig.SetShouldPlayAfterCooldown(true);
+		break;
+	case EGameFeedbackEffectState::Idle:
+		if (BasicConfig.Timing.IsUseDelay())
+		{
+			BasicConfig.State = EGameFeedbackEffectState::Delay;
+		}
+		else
+		{
+			OnPlay();
 
-	if (BasicConfig.Timing.IsUseDelay())
-	{
-		BasicConfig.State = EGameFeedbackEffectState::Delay;
-	}
-	else
-	{
-		BasicConfig.State = EGameFeedbackEffectState::Running;
+			BasicConfig.State = EGameFeedbackEffectState::Running;
+		}
+		break;
+	default:
+		break;
 	}
 }
 
 void UGameFeedbackEffectBase::Pause()
 {
-	OnPause();
-
-	BasicConfig.State = EGameFeedbackEffectState::Paused;
+	switch (BasicConfig.State)
+	{
+	case EGameFeedbackEffectState::Running:
+		OnPause();
+	case EGameFeedbackEffectState::Delay:
+	case EGameFeedbackEffectState::Cooldown:
+		BasicConfig.State = EGameFeedbackEffectState::Paused;
+	default:
+		break;
+	}
 }
 
 void UGameFeedbackEffectBase::Resume()
 {
-	OnResume();
+	switch (BasicConfig.State)
+	{
+	case EGameFeedbackEffectState::Paused:
+		if (BasicConfig.Timing.IsOnCoolDown())
+		{
+			BasicConfig.State = EGameFeedbackEffectState::Cooldown;
+			return;
+		}
 
-	BasicConfig.State = EGameFeedbackEffectState::Running;
+		if (BasicConfig.Timing.IsOnDelay())
+		{
+			BasicConfig.State = EGameFeedbackEffectState::Delay;
+			return;
+		}
+
+		OnResume();
+		BasicConfig.State = EGameFeedbackEffectState::Running;
+		break;
+	default:
+		break;
+	}
 }
 
-void UGameFeedbackEffectBase::Stop()
+void UGameFeedbackEffectBase::Stop(bool& bOnCooldown)
 {
-	if (BasicConfig.State == EGameFeedbackEffectState::Running || BasicConfig.State == EGameFeedbackEffectState::Paused)
+	bOnCooldown = false;
+
+	switch (BasicConfig.State)
 	{
+	case EGameFeedbackEffectState::Running:
+	case EGameFeedbackEffectState::Paused:
 		OnStop(true);
 
-		BasicConfig.Timing.Reset();
+		if (BasicConfig.Timing.IsUseCoolDown())
+		{
+			BasicConfig.Timing.ResetAtEnd();
+			BasicConfig.State = EGameFeedbackEffectState::Cooldown;
+			bOnCooldown = true;
+			break;
+		}
 
+		BasicConfig.Timing.Reset();
 		BasicConfig.State = EGameFeedbackEffectState::Idle;
+		break;
+	case EGameFeedbackEffectState::Delay:
+		BasicConfig.Timing.Reset();
+		BasicConfig.State = EGameFeedbackEffectState::Idle;
+		break;
+	case EGameFeedbackEffectState::Cooldown:
+		bOnCooldown = true;
+		break;
+	default:
+		break;
 	}
 }
 
@@ -162,25 +219,54 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 		{
 			OnStop(false);
 
-			BasicConfig.Timing.Reset();
+			if (BasicConfig.Timing.IsUseCoolDown())
+			{
+				BasicConfig.State = EGameFeedbackEffectState::Cooldown;
+			}
+			else
+			{
+				BasicConfig.Timing.Reset();
 
-			BasicConfig.State = EGameFeedbackEffectState::Idle;
+				BasicConfig.State = EGameFeedbackEffectState::Idle;
+			}
 		}
 
 		return true;
 	case EGameFeedbackEffectState::Delay:
-		if (!BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation()))
-		{
-			OnStop(false);
-
-			BasicConfig.Timing.Reset();
-
-			BasicConfig.State = EGameFeedbackEffectState::Idle;
-		}
+		BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation());
 
 		if (!BasicConfig.Timing.IsOnDelay())
 		{
 			BasicConfig.State = EGameFeedbackEffectState::Running;
+		}
+
+		return true;
+	case EGameFeedbackEffectState::Cooldown:
+		BasicConfig.Timing.Tick(DeltaTime, GetContextWorldTimeDilation());
+
+		if (BasicConfig.Timing.IsCoolDownEnd())
+		{
+			BasicConfig.Timing.Reset();
+
+			if (BasicConfig.ShouldPlayAfterCooldown())
+			{
+				if (BasicConfig.Timing.IsUseDelay())
+				{
+					BasicConfig.State = EGameFeedbackEffectState::Delay;
+				}
+				else
+				{
+					OnPlay();
+
+					BasicConfig.State = EGameFeedbackEffectState::Running;
+				}
+
+				BasicConfig.SetShouldPlayAfterCooldown(false);
+			}
+			else
+			{
+				BasicConfig.State = EGameFeedbackEffectState::Idle;
+			}
 		}
 
 		return true;
@@ -195,10 +281,16 @@ void UGameFeedbackEffectBase::Reset()
 {
 	if (BasicConfig.State != EGameFeedbackEffectState::NotInitialized)
 	{
-		BasicConfig.Timing.Reset();
+		BasicConfig.Timing.ResetToZero();
 
 		BasicConfig.State = EGameFeedbackEffectState::NotInitialized;
 	}
+}
+
+bool UGameFeedbackEffectBase::InIdleOrNotInitializedState() const
+{
+	return BasicConfig.State == EGameFeedbackEffectState::NotInitialized ||
+		BasicConfig.State == EGameFeedbackEffectState::Idle;
 }
 #pragma endregion
 
