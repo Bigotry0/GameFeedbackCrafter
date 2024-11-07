@@ -95,9 +95,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
 	bool bRepeatForever = false;
 
-	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
-	float DelayBetweenRepeats = 1.0f;
-
+#pragma region LifeCycle
 	/**
 	 * Tick the timing.
 	 * @param DeltaTime The time since the last tick.
@@ -117,6 +115,22 @@ public:
 		return !(ElapsedTime >= Duration);
 	}
 
+	/**
+	 * Duration / ElapsedTime
+	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
+	 */
+	float GetProgress() const
+	{
+		if (Duration == 0.0f)
+		{
+			return 1.0f;
+		}
+
+		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+	}
+#pragma endregion
+
+#pragma region Reset
 	/**
 	 * Reset the timing.
 	 */
@@ -141,19 +155,15 @@ public:
 	}
 
 	/**
-	 * Duration / ElapsedTime
-	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
+	 * Reset the timing at the end of the duration.
 	 */
-	float GetProgress() const
+	void ResetAtEnd()
 	{
-		if (Duration == 0.0f)
-		{
-			return 1.0f;
-		}
-
-		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+		ElapsedTime = Duration;
 	}
+#pragma endregion
 
+#pragma region Delay
 	bool IsUseDelay() const
 	{
 		return Delay > 0.0f;
@@ -163,7 +173,9 @@ public:
 	{
 		return ElapsedTime < 0.0f;
 	}
+#pragma endregion
 
+#pragma region CoolDown
 	bool IsUseCoolDown() const
 	{
 		return CoolDown > 0.0f;
@@ -178,11 +190,7 @@ public:
 	{
 		return ElapsedTime >= Duration + CoolDown;
 	}
-
-	void ResetAtEnd()
-	{
-		ElapsedTime = Duration;
-	}
+#pragma endregion
 };
 
 //TODO: Add Custom Editor
