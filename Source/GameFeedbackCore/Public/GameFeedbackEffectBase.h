@@ -71,7 +71,7 @@ struct FGameFeedbackEffectTiming
 	GENERATED_BODY()
 
 private:
-	uint32 RepeatCount = 0;
+	int32 RepeatCount = 0;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Time")
@@ -89,11 +89,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Time|Delay")
 	float CoolDown = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
-	uint32 NumOfRepeats = 0;
+	UPROPERTY(EditAnywhere, Category = "Time|Repeat", meta=(ClampMin = 0))
+	int32 NumOfRepeats = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Time|Repeat")
 	bool bRepeatForever = false;
+
+	UPROPERTY(EditAnywhere, Category = "Time|Repeat", meta = (ClampMin = 0))
+	float DelayBetweenRepeats = 0.0f;
 
 #pragma region LifeCycle
 	/**
@@ -189,6 +192,38 @@ public:
 	bool IsCoolDownEnd() const
 	{
 		return ElapsedTime >= Duration + CoolDown;
+	}
+#pragma endregion
+
+#pragma region Repeat
+	bool IsUseRepeat() const
+	{
+		return bRepeatForever || NumOfRepeats > 0;
+	}
+
+	bool Repeat()
+	{
+		if (bRepeatForever)
+		{
+			ElapsedTime = -DelayBetweenRepeats;
+			return true;
+		}
+
+		if (NumOfRepeats < 0)
+		{
+			return false;
+		}
+
+		if (RepeatCount >= NumOfRepeats)
+		{
+			RepeatCount = 0;
+			return false;
+		}
+
+		ElapsedTime = -DelayBetweenRepeats;
+		RepeatCount++;
+
+		return true;
 	}
 #pragma endregion
 };

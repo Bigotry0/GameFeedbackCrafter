@@ -219,6 +219,22 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 		{
 			OnStop(false);
 
+			if (BasicConfig.Timing.IsUseRepeat() && BasicConfig.Timing.Repeat())
+			{
+				if (BasicConfig.Timing.IsOnDelay())
+				{
+					BasicConfig.State = EGameFeedbackEffectState::Delay;
+				}
+				else
+				{
+					OnPlay();
+
+					BasicConfig.State = EGameFeedbackEffectState::Running;
+				}
+
+				return true;
+			}
+
 			if (BasicConfig.Timing.IsUseCoolDown())
 			{
 				BasicConfig.State = EGameFeedbackEffectState::Cooldown;
@@ -237,6 +253,8 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 
 		if (!BasicConfig.Timing.IsOnDelay())
 		{
+			OnPlay();
+
 			BasicConfig.State = EGameFeedbackEffectState::Running;
 		}
 
