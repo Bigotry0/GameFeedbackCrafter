@@ -127,6 +127,42 @@ bool FGameFeedbackEffectTiming::Repeat()
 	return true;
 }
 #pragma endregion
+
+#pragma region PlayDirection
+void FGameFeedbackEffectTiming::InitPlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection)
+{
+	switch (EffectPlayDirection)
+	{
+	case EGameFeedbackEffectPlayDirection::FollowFeedback:
+		if (FeedbackPlayDirection == EGameFeedbackPlayDirection::Forward)
+		{
+			PlayDirection = Forward;
+		}
+		else
+		{
+			PlayDirection = Backward;
+		}
+		break;
+	case EGameFeedbackEffectPlayDirection::OppositeFeedback:
+		if (FeedbackPlayDirection == EGameFeedbackPlayDirection::Forward)
+		{
+			PlayDirection = Backward;
+		}
+		else
+		{
+			PlayDirection = Forward;
+		}
+		break;
+	case EGameFeedbackEffectPlayDirection::AlwaysForward:
+		PlayDirection = Forward;
+		break;
+	case EGameFeedbackEffectPlayDirection::AlwaysBackward:
+		PlayDirection = Backward;
+		break;
+	}
+}
+#pragma endregion
+
 #pragma endregion
 
 float UGameFeedbackEffectBase::GetEffectProgress() const
@@ -230,6 +266,7 @@ void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFee
 	}
 
 	BasicConfig.Timing.Reset();
+	BasicConfig.Timing.InitPlayDirection(OwnerGameFeedback->GetPlayDirection());
 	BasicConfig.SetShouldPlayAfterCooldown(false);
 
 	OnInit();

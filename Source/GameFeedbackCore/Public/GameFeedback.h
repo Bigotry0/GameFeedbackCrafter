@@ -18,6 +18,13 @@ enum class EGameFeedbackState : uint8
 	Paused,
 };
 
+UENUM(BlueprintType)
+enum class EGameFeedbackPlayDirection : uint8
+{
+	Forward,
+	Backward
+};
+
 /**
  * 
  */
@@ -36,10 +43,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "GameFeedback")
 	float ElapsedTime = 0.0f;
 
+	UPROPERTY(EditAnywhere, Category = "GameFeedback")
+	EGameFeedbackPlayDirection PlayDirection = EGameFeedbackPlayDirection::Forward;
+
 public:
 	bool NotInIdleState() const
 	{
 		return State != EGameFeedbackState::Idle;
+	}
+
+	EGameFeedbackPlayDirection GetPlayDirection() const
+	{
+		return PlayDirection;
 	}
 
 private:

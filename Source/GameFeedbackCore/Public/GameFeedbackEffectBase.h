@@ -13,6 +13,7 @@
 #define GFE_OnlyActorOrComponentContext "IsOnlyActorOrComponentContext()"
 #define GFE_ExcludeStaticContext "IsExcludeStaticContext()"
 
+enum class EGameFeedbackPlayDirection : uint8;
 class UGameFeedback;
 
 UENUM()
@@ -65,13 +66,31 @@ enum class ETimeScaleMode : uint8
 	Unscaled
 };
 
+UENUM(BlueprintType)
+enum class EGameFeedbackEffectPlayDirection : uint8
+{
+	FollowFeedback,
+	OppositeFeedback,
+	AlwaysForward,
+	AlwaysBackward
+};
+
 USTRUCT()
 struct FGameFeedbackEffectTiming
 {
 	GENERATED_BODY()
 
+protected:
+	enum EPlayDirection
+	{
+		Forward,
+		Backward
+	};
+
 private:
 	int32 RepeatCount = 0;
+
+	EPlayDirection PlayDirection = Forward;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Time")
@@ -97,6 +116,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Time|Repeat", meta = (ClampMin = 0))
 	float DelayBetweenRepeats = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Time|PlayDirection")
+	EGameFeedbackEffectPlayDirection EffectPlayDirection = EGameFeedbackEffectPlayDirection::FollowFeedback;
 
 #pragma region LifeCycle
 	/**
@@ -149,7 +171,10 @@ public:
 	bool IsUseRepeat() const;
 
 	bool Repeat();
+#pragma endregion
 
+#pragma region PlayDirection
+	void InitPlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection);
 #pragma endregion
 };
 
