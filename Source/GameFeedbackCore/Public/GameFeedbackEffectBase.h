@@ -105,126 +105,51 @@ public:
 	 * @param TimeDilation The time dilation value of the world.
 	 * @return true if the effect is still running, false otherwise
 	 */
-	bool Tick(float DeltaTime, float TimeDilation)
-	{
-		if (Duration == 0.0f)
-		{
-			return false;
-		}
-
-		const float DeltaTimeScaled = TimeScaleMode == ETimeScaleMode::Scaled ? DeltaTime * TimeDilation : DeltaTime;
-		ElapsedTime += DeltaTimeScaled;
-
-		return !(ElapsedTime >= Duration);
-	}
+	bool Tick(float DeltaTime, float TimeDilation);
 
 	/**
 	 * Duration / ElapsedTime
 	 * @return Progress of the effect. Clamp between 0.0f and 1.0f
 	 */
-	float GetProgress() const
-	{
-		if (Duration == 0.0f)
-		{
-			return 1.0f;
-		}
-
-		return FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
-	}
+	float GetProgress() const;
 #pragma endregion
 
 #pragma region Reset
 	/**
 	 * Reset the timing.
 	 */
-	void Reset()
-	{
-		if (Delay > 0.0f)
-		{
-			ElapsedTime = -Delay;
-		}
-		else
-		{
-			ElapsedTime = 0.0f;
-		}
-	}
+	void Reset();
 
 	/**
 	 * Force reset the timing to zero.
 	 */
-	void ResetToZero()
-	{
-		ElapsedTime = 0.0f;
-	}
+	void ResetToZero();
 
 	/**
 	 * Reset the timing at the end of the duration.
 	 */
-	void ResetAtEnd()
-	{
-		ElapsedTime = Duration;
-	}
+	void ResetAtEnd();
 #pragma endregion
 
 #pragma region Delay
-	bool IsUseDelay() const
-	{
-		return Delay > 0.0f;
-	}
+	bool IsUseDelay() const;
 
-	bool IsOnDelay() const
-	{
-		return ElapsedTime < 0.0f;
-	}
+	bool IsOnDelay() const;
 #pragma endregion
 
 #pragma region CoolDown
-	bool IsUseCoolDown() const
-	{
-		return CoolDown > 0.0f;
-	}
+	bool IsUseCoolDown() const;
 
-	bool IsOnCoolDown() const
-	{
-		return IsUseCoolDown() && ElapsedTime >= Duration;
-	}
+	bool IsOnCoolDown() const;
 
-	bool IsCoolDownEnd() const
-	{
-		return ElapsedTime >= Duration + CoolDown;
-	}
+	bool IsCoolDownEnd() const;
 #pragma endregion
 
 #pragma region Repeat
-	bool IsUseRepeat() const
-	{
-		return bRepeatForever || NumOfRepeats > 0;
-	}
+	bool IsUseRepeat() const;
 
-	bool Repeat()
-	{
-		if (bRepeatForever)
-		{
-			ElapsedTime = -DelayBetweenRepeats;
-			return true;
-		}
+	bool Repeat();
 
-		if (NumOfRepeats < 0)
-		{
-			return false;
-		}
-
-		if (RepeatCount >= NumOfRepeats)
-		{
-			RepeatCount = 0;
-			return false;
-		}
-
-		ElapsedTime = -DelayBetweenRepeats;
-		RepeatCount++;
-
-		return true;
-	}
 #pragma endregion
 };
 

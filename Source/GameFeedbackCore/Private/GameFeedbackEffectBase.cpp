@@ -4,6 +4,131 @@
 
 #include "GameFeedback.h"
 
+#pragma region GameFeedbackEffectTiming
+
+#pragma region LifeCycle
+bool FGameFeedbackEffectTiming::Tick(float DeltaTime, float TimeDilation)
+{
+	if (Duration == 0.0f)
+	{
+		return false;
+	}
+
+	const float DeltaTimeScaled = TimeScaleMode == ETimeScaleMode::Scaled ? DeltaTime * TimeDilation : DeltaTime;
+	ElapsedTime += DeltaTimeScaled;
+
+	return !(ElapsedTime >= Duration);
+}
+
+float FGameFeedbackEffectTiming::GetProgress() const
+{
+	if (Duration == 0.0f)
+	{
+		if (PlayDirection == Backward)
+		{
+			return 0.0f;
+		}
+
+		return 1.0f;
+	}
+
+	float Progress = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+
+	if (PlayDirection == Backward)
+	{
+		Progress = 1.0f - Progress;
+	}
+
+	return Progress;
+}
+#pragma endregion
+
+#pragma region Reset
+void FGameFeedbackEffectTiming::Reset()
+{
+	if (Delay > 0.0f)
+	{
+		ElapsedTime = -Delay;
+	}
+	else
+	{
+		ElapsedTime = 0.0f;
+	}
+}
+
+void FGameFeedbackEffectTiming::ResetToZero()
+{
+	ElapsedTime = 0.0f;
+}
+
+void FGameFeedbackEffectTiming::ResetAtEnd()
+{
+	ElapsedTime = Duration;
+}
+#pragma endregion
+
+#pragma region Delay
+bool FGameFeedbackEffectTiming::IsUseDelay() const
+{
+	return Delay > 0.0f;
+}
+
+bool FGameFeedbackEffectTiming::IsOnDelay() const
+{
+	return ElapsedTime < 0.0f;
+}
+#pragma endregion
+
+#pragma region CoolDown
+bool FGameFeedbackEffectTiming::IsUseCoolDown() const
+{
+	return CoolDown > 0.0f;
+}
+
+bool FGameFeedbackEffectTiming::IsOnCoolDown() const
+{
+	return IsUseCoolDown() && ElapsedTime >= Duration;
+}
+
+bool FGameFeedbackEffectTiming::IsCoolDownEnd() const
+{
+	return ElapsedTime >= Duration + CoolDown;
+}
+#pragma endregion
+
+#pragma region Repeat
+bool FGameFeedbackEffectTiming::IsUseRepeat() const
+{
+	return bRepeatForever || NumOfRepeats > 0;
+}
+
+bool FGameFeedbackEffectTiming::Repeat()
+{
+	if (bRepeatForever)
+	{
+		ElapsedTime = -DelayBetweenRepeats;
+		return true;
+	}
+
+	if (NumOfRepeats < 0)
+	{
+		return false;
+	}
+
+	if (RepeatCount >= NumOfRepeats)
+	{
+		RepeatCount = 0;
+		return false;
+	}
+
+	ElapsedTime = -DelayBetweenRepeats;
+	RepeatCount++;
+
+	return true;
+}
+#pragma endregion
+#pragma endregion
+
 float UGameFeedbackEffectBase::GetEffectProgress() const
 {
 	return BasicConfig.GetProgress();
