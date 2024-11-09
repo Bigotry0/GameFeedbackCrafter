@@ -38,7 +38,8 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
-	void PlayFeedback(FName FeedbackName);
+	void PlayFeedback(FName FeedbackName,
+	                  EGameFeedbackPlayDirection PlayDirection = EGameFeedbackPlayDirection::Forward);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
 	void PauseFeedback(FName FeedbackName);
@@ -50,7 +51,8 @@ public:
 	void StopFeedback(FName FeedbackName);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackManager")
-	void ReplayFeedback(FName FeedbackName);
+	void ReplayFeedback(FName FeedbackName,
+	                    EGameFeedbackPlayDirection PlayDirection = EGameFeedbackPlayDirection::Forward);
 
 #if WITH_EDITORONLY_DATA
 
@@ -103,7 +105,7 @@ protected:
 		}
 	}
 
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	// virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 
 #endif

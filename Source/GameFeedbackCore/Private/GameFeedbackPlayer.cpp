@@ -37,7 +37,7 @@ void UGameFeedbackPlayer::LoadFeedback(UGameFeedback* Feedback, const EGameFeedb
 	CurrentFeedback->InitFeedback(ContextType, Context);
 }
 
-void UGameFeedbackPlayer::PlayFeedback(bool bUseAutoUnload)
+void UGameFeedbackPlayer::PlayFeedback(const EGameFeedbackPlayDirection PlayDirection, bool bUseAutoUnload)
 {
 	if (!IsCurrentFeedbackValid())
 	{
@@ -45,7 +45,7 @@ void UGameFeedbackPlayer::PlayFeedback(bool bUseAutoUnload)
 	}
 
 	bAutoUnload = bUseAutoUnload;
-	CurrentFeedback->PlayFeedback();
+	CurrentFeedback->PlayFeedback(PlayDirection);
 }
 
 void UGameFeedbackPlayer::PauseFeedback() const
@@ -78,7 +78,7 @@ void UGameFeedbackPlayer::StopFeedback() const
 	CurrentFeedback->StopFeedback();
 }
 
-void UGameFeedbackPlayer::ReplayFeedback() const
+void UGameFeedbackPlayer::ReplayFeedback(const EGameFeedbackPlayDirection PlayDirection, bool bUseAutoUnload)
 {
 	if (!IsCurrentFeedbackValid())
 	{
@@ -86,7 +86,9 @@ void UGameFeedbackPlayer::ReplayFeedback() const
 	}
 
 	CurrentFeedback->StopFeedback();
-	CurrentFeedback->PlayFeedback();
+
+	bAutoUnload = bUseAutoUnload;
+	CurrentFeedback->PlayFeedback(PlayDirection);
 }
 
 void UGameFeedbackPlayer::UnloadFeedback()

@@ -129,7 +129,7 @@ bool FGameFeedbackEffectTiming::Repeat()
 #pragma endregion
 
 #pragma region PlayDirection
-void FGameFeedbackEffectTiming::InitPlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection)
+void FGameFeedbackEffectTiming::UpdatePlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection)
 {
 	switch (EffectPlayDirection)
 	{
@@ -266,7 +266,7 @@ void UGameFeedbackEffectBase::Init(UGameFeedback* InGameFeedback, const EGameFee
 	}
 
 	BasicConfig.Timing.Reset();
-	BasicConfig.Timing.InitPlayDirection(OwnerGameFeedback->GetPlayDirection());
+	BasicConfig.Timing.UpdatePlayDirection(OwnerGameFeedback->GetPlayDirection());
 	BasicConfig.SetShouldPlayAfterCooldown(false);
 
 	OnInit();
@@ -288,9 +288,7 @@ void UGameFeedbackEffectBase::Play()
 		}
 		else
 		{
-			OnPlay();
-
-			BasicConfig.State = EGameFeedbackEffectState::Running;
+			PlayEffect();
 		}
 		break;
 	default:
@@ -389,9 +387,7 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 				}
 				else
 				{
-					OnPlay();
-
-					BasicConfig.State = EGameFeedbackEffectState::Running;
+					PlayEffect();
 				}
 
 				return true;
@@ -415,9 +411,7 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 
 		if (!BasicConfig.Timing.IsOnDelay())
 		{
-			OnPlay();
-
-			BasicConfig.State = EGameFeedbackEffectState::Running;
+			PlayEffect();
 		}
 
 		return true;
@@ -436,9 +430,7 @@ bool UGameFeedbackEffectBase::Tick(float DeltaTime)
 				}
 				else
 				{
-					OnPlay();
-
-					BasicConfig.State = EGameFeedbackEffectState::Running;
+					PlayEffect();
 				}
 
 				BasicConfig.SetShouldPlayAfterCooldown(false);
@@ -465,6 +457,15 @@ void UGameFeedbackEffectBase::Reset()
 
 		BasicConfig.State = EGameFeedbackEffectState::NotInitialized;
 	}
+}
+
+void UGameFeedbackEffectBase::PlayEffect()
+{
+	BasicConfig.Timing.UpdatePlayDirection(OwnerGameFeedback->GetPlayDirection());
+
+	OnPlay();
+
+	BasicConfig.State = EGameFeedbackEffectState::Running;
 }
 
 bool UGameFeedbackEffectBase::InIdleOrNotInitializedState() const

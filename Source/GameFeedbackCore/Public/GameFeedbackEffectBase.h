@@ -174,7 +174,7 @@ public:
 #pragma endregion
 
 #pragma region PlayDirection
-	void InitPlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection);
+	void UpdatePlayDirection(EGameFeedbackPlayDirection FeedbackPlayDirection);
 #pragma endregion
 };
 
@@ -372,6 +372,8 @@ protected:
 	}
 
 private:
+	void PlayEffect();
+
 	bool InIdleOrNotInitializedState() const;
 #pragma endregion
 	//////////////// Timing ////////////////

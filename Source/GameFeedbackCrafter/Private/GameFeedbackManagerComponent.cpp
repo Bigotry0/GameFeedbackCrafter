@@ -60,7 +60,7 @@ UGameFeedbackPlayer* UGameFeedbackManagerComponent::GetFeedbackPlayerFromFeedbac
 	return FeedbackPlayers[FeedbackName];
 }
 
-void UGameFeedbackManagerComponent::PlayFeedback(FName FeedbackName)
+void UGameFeedbackManagerComponent::PlayFeedback(FName FeedbackName, EGameFeedbackPlayDirection PlayDirection)
 {
 	if (!ValidateFeedback(FeedbackName))
 	{
@@ -70,7 +70,7 @@ void UGameFeedbackManagerComponent::PlayFeedback(FName FeedbackName)
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
 	if (FeedbackPlayer)
 	{
-		FeedbackPlayer->PlayFeedback();
+		FeedbackPlayer->PlayFeedback(PlayDirection);
 	}
 }
 
@@ -116,7 +116,7 @@ void UGameFeedbackManagerComponent::StopFeedback(FName FeedbackName)
 	}
 }
 
-void UGameFeedbackManagerComponent::ReplayFeedback(FName FeedbackName)
+void UGameFeedbackManagerComponent::ReplayFeedback(FName FeedbackName, EGameFeedbackPlayDirection PlayDirection)
 {
 	if (!ValidateFeedback(FeedbackName))
 	{
@@ -126,34 +126,34 @@ void UGameFeedbackManagerComponent::ReplayFeedback(FName FeedbackName)
 	UGameFeedbackPlayer* FeedbackPlayer = GetFeedbackPlayerFromFeedbacksMap(FeedbackName);
 	if (FeedbackPlayer)
 	{
-		FeedbackPlayer->ReplayFeedback();
+		FeedbackPlayer->ReplayFeedback(PlayDirection);
 	}
 }
 
-#if WITH_EDITOR
-void UGameFeedbackManagerComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks))
-	{
-		const int32 ChangeIndex = PropertyChangedEvent.GetArrayIndex(
-			(GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks)).ToString());
-
-		TArray<FName> FeedbacksKeyArray;
-		Feedbacks.GenerateKeyArray(FeedbacksKeyArray);
-
-		if (!FeedbacksKeyArray.IsValidIndex(ChangeIndex))
-		{
-			return;
-		}
-
-		const FName FeedbackName = FeedbacksKeyArray[ChangeIndex];
-
-		if (FeedbackPlayers.Contains(FeedbackName))
-		{
-			ReplayFeedback(FeedbackName);
-		}
-	}
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-}
-#endif
+// #if WITH_EDITOR
+// void UGameFeedbackManagerComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+// {
+	// if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks))
+	// {
+	// 	const int32 ChangeIndex = PropertyChangedEvent.GetArrayIndex(
+	// 		(GET_MEMBER_NAME_CHECKED(UGameFeedbackManagerComponent, Feedbacks)).ToString());
+	//
+	// 	TArray<FName> FeedbacksKeyArray;
+	// 	Feedbacks.GenerateKeyArray(FeedbacksKeyArray);
+	//
+	// 	if (!FeedbacksKeyArray.IsValidIndex(ChangeIndex))
+	// 	{
+	// 		return;
+	// 	}
+	//
+	// 	const FName FeedbackName = FeedbacksKeyArray[ChangeIndex];
+	//
+	// 	if (FeedbackPlayers.Contains(FeedbackName))
+	// 	{
+	// 		ReplayFeedback(FeedbackName, Feedbacks[FeedbackName]->GetPlayDirection());
+	// 	}
+	// }
+	//
+	// Super::PostEditChangeProperty(PropertyChangedEvent);
+// }
+// #endif

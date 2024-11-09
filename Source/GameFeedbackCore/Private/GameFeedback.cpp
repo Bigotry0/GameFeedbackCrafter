@@ -64,7 +64,7 @@ void UGameFeedback::InitFeedback(const EGameFeedbackEffectContextType InContextT
 	}
 }
 
-void UGameFeedback::PlayFeedback()
+void UGameFeedback::PlayFeedback(const EGameFeedbackPlayDirection InPlayDirection)
 {
 	if (!ValidateGameFeedbackEffects())
 	{
@@ -73,6 +73,8 @@ void UGameFeedback::PlayFeedback()
 
 	if (State == EGameFeedbackState::Idle || State == EGameFeedbackState::Running)
 	{
+		PlayDirection = InPlayDirection;
+		
 		for (const auto GFE : GameFeedbackEffects)
 		{
 			if (!ValidateGameFeedbackEffect(GFE))

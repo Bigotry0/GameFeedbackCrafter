@@ -34,7 +34,8 @@ public:
 	void LoadFeedback(UGameFeedback* Feedback, const EGameFeedbackEffectContextType ContextType, UObject* Context);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void PlayFeedback(bool bUseAutoUnload = false);
+	void PlayFeedback(const EGameFeedbackPlayDirection PlayDirection = EGameFeedbackPlayDirection::Forward,
+	                  bool bUseAutoUnload = false);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
 	void PauseFeedback() const;
@@ -46,7 +47,8 @@ public:
 	void StopFeedback() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
-	void ReplayFeedback() const;
+	void ReplayFeedback(const EGameFeedbackPlayDirection PlayDirection = EGameFeedbackPlayDirection::Forward,
+	                    bool bUseAutoUnload = false);
 
 	UFUNCTION(BlueprintCallable, Category = "GameFeedbackPlayer")
 	void UnloadFeedback();

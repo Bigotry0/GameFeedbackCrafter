@@ -82,7 +82,7 @@ public:
 	/**
 	 * Play feedback
 	 */
-	void PlayFeedback();
+	void PlayFeedback(const EGameFeedbackPlayDirection InPlayDirection = EGameFeedbackPlayDirection::Forward);
 
 	/**
 	 * Pause feedback
