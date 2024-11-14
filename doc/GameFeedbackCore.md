@@ -124,20 +124,50 @@ GetEffectType() const
     return EGameFeedbackEffectType::Custom; }
 }
 ```
-The above lifecycle callback names basically clarify their respective functions, and subclasses can override these dummy functions and insert their own effect logic.The state of GameFeedbackEffect is basically the same as GameFeedback, because GameFeedback actually does a bit of forwarding. The following is the state diagram of GameFeedbackEffect:
+The above lifecycle callback names basically make their respective functions clear, and subclasses can override these dummy functions and insert logic for their own effects.The state of GameFeedbackEffect is different from that of GameFeedback, and has a more complex internal state, which is as follows:
+> - NotInitialized
+> - Idle
+> - Running
+> - Delay
+> - Cooldown
+> - Paused
+
+Below is the state diagram of GameFeedbackEffect:
 ```mermaid
-stateDiagram-v2
-[*] --> NotInitialized
-NotInitialized --> Idle : Init()
+---
+config:
+  layout: elk
+  look: neo
+  theme: default
+---
 
-Idle --> Running : Play()
-Running --> Idle : Stop()
+stateDiagram
+  direction TB
+  [*] --> NotInitialized
 
-Running --> Paused : Pause()
-Paused --> Running : Resume()
+  NotInitialized --> Idle:Init()
 
-Paused --> Idle : Stop()
+  Idle --> Delay:Play(), if use delay
+
+  Delay --> Idle:Stop(), if not use cooldown
+  Delay --> Running:Tick(), if delay time to target
+  Delay --> Paused:Pause() , if on delay
+
+  Running --> Idle:Stop(), if not use cooldown
+  Running --> Cooldown:Tick() or Stop(), if use cooldown
+  Running --> Paused:Pause()
+
+  Paused --> Delay:Resume(), If the target delay is not achieved
+  Paused --> Running:Resume()
+  Paused --> Cooldown:Resume(), If the target cooldown is not achieved
+
+  Cooldown --> Paused:Pause(), if current in cooldown
+  Cooldown --> Delay:Tick(), if use repeat and delay
+  Cooldown --> Running:Tick(), if use repeat
+  Cooldown --> Idle:Tick(), if cooldown time to target
 ```
+GameFeedbackEffect in GameFeedback based on two more special states: Delay and Cooldown, adding these two states allows the user to GameFeedbackEffect in the Timing level to do more detailed control, mainly for the delay, repeat, cooldown limit of the three effects. These are maintained by the GFE base class. When expanding GFE, users can ignore this part and focus on implementing the lifecycle functions.
+
 The GameFeedbackEffect class declares an `EGameFeedbackEffectType GetEffectType()` function, which returns an `EGameFeedbackEffectType` enumeration that defines the GameFeedbackEffect's This enumeration is for editor use only, and is mainly used as a marker for the custom attribute editor (which has not yet been implemented).
 ## GameFeedbackPlayer
 ```cpp

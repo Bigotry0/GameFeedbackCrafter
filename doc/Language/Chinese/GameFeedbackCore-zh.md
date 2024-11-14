@@ -122,20 +122,50 @@ virtual EGameFeedbackEffectType GetEffectType() const
     return EGameFeedbackEffectType::Custom;  
 }
 ```
-以上生命周期回调名称基本上已经说明清楚了它们各自的功能，子类可以重写这些虚函数并插入自己效果的逻辑。GameFeedbackEffect的状态基本上跟GameFeedback是一样的，因为GameFeedback其实也就是做了一下转发而已，下图是GameFeedbackEffect的状态图：
-```mermaid
-stateDiagram-v2
-	[*] --> NotInitialized
-	NotInitialized --> Idle : Init()
-	
-	Idle --> Running : Play()
-	Running --> Idle : Stop()
-	
-	Running --> Paused : Pause()
-	Paused --> Running : Resume()
+以上生命周期回调名称基本上已经说明清楚了它们各自的功能，子类可以重写这些虚函数并插入自己效果的逻辑。GameFeedbackEffect的状态跟GameFeedback有所不同，具有更复杂的内部状态，状态如下：
+> - NotInitialized
+> - Idle
+> - Running
+> - Delay
+> - Cooldown
+> - Paused
 
-	Paused --> Idle : Stop()
+下图是GameFeedbackEffect的状态图：
+```mermaid
+---
+config:
+  layout: elk
+  look: neo
+  theme: default
+---
+
+stateDiagram
+  direction TB
+  [*] --> NotInitialized
+
+  NotInitialized --> Idle:Init()
+
+  Idle --> Delay:Play(), if use delay
+
+  Delay --> Idle:Stop(), if not use cooldown
+  Delay --> Running:Tick(), if delay time to target
+  Delay --> Paused:Pause() , if on delay
+
+  Running --> Idle:Stop(), if not use cooldown
+  Running --> Cooldown:Tick() or Stop(), if use cooldown
+  Running --> Paused:Pause()
+
+  Paused --> Delay:Resume(), If the target delay is not achieved
+  Paused --> Running:Resume()
+  Paused --> Cooldown:Resume(), If the target cooldown is not achieved
+
+  Cooldown --> Paused:Pause(), if current in cooldown
+  Cooldown --> Delay:Tick(), if use repeat and delay
+  Cooldown --> Running:Tick(), if use repeat
+  Cooldown --> Idle:Tick(), if cooldown time to target
 ```
+GameFeedbackEffect在GameFeedback的基础上，多了两个特殊的状态：Delay和Cooldown， 加入这两个状态后，允许用户对GameFeedbackEffect在Timing层面上做更细致的控制，主要为延迟、重复、冷却限制这三个效果。这些都由GFE基类维护，在拓展GFE的时候，用户可以忽略这部分的内容，专注于实现生命周期函数即可。
+
 GameFeedbackEffect类声明了一个`EGameFeedbackEffectType GetEffectType()`函数，里面返回了一个`EGameFeedbackEffectType`枚举，该枚举变量定义了GameFeedbackEffect的类型，该枚举仅用于编辑器，主要作为标记供自定义属性编辑器（尚未实现）使用。
 ## GameFeedbackPlayer
 ```cpp
